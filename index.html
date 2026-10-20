@@ -166,6 +166,38 @@
     if (ms > now + FUTURE_SKEW_MS){ if (label) state.future[label] = ms; return now; }
     return ms;
   }
+  // Start (09:30 ET) of the most recent regular session at or before `ms`: today's open if it is a weekday
+  // and 09:30 ET has passed, otherwise the previous weekday's open. (NYSE holidays are not modelled, so on a
+  // holiday the rule is stricter, never looser.)
+  function etParts(ms){
+    var o = {}; new Intl.DateTimeFormat("en-US",{timeZone:TZ,year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric",second:"numeric",weekday:"short",hourCycle:"h23"})
+      .formatToParts(new Date(ms)).forEach(function(p){ o[p.type] = p.value; });
+    return { y:+o.year, m:+o.month, d:+o.day, h:+o.hour, mi:+o.minute, s:+o.second, wd:o.weekday };
+  }
+  function etWallToMs(y, m, d, h, mi){
+    var guess = Date.UTC(y, m-1, d, h, mi);
+    var p = etParts(guess), asUTC = Date.UTC(p.y, p.m-1, p.d, p.h, p.mi, p.s);
+    return guess - (asUTC - guess);   // subtract the ET offset at that moment
+  }
+  function sessionOpen(ms){
+    var p = etParts(ms), day = Date.UTC(p.y, p.m-1, p.d);
+    var wd = new Date(day).getUTCDay();
+    var beforeOpen = p.h < 9 || (p.h === 9 && p.mi < 30);
+    if (wd === 0 || wd === 6 || beforeOpen){
+      do { day -= 86400000; wd = new Date(day).getUTCDay(); } while (wd === 0 || wd === 6);
+    }
+    var dd = new Date(day);
+    return etWallToMs(dd.getUTCFullYear(), dd.getUTCMonth()+1, dd.getUTCDate(), 9, 30);
+  }
+  // Does a fetched quote beat the committed price?
+  // - normal committed as_of: the quote must be newer than it (unknown quote time counts as newer).
+  // - future-dated committed as_of (untrustworthy): the quote must have a known time on or after the
+  //   most recent regular session's 09:30 ET open, so stale quotes (e.g. 26 h old) are still rejected.
+  function quoteBeats(quoteTime, comm){
+    if (!comm) return true;
+    if (comm.future) return quoteTime != null && quoteTime >= sessionOpen(Date.now());
+    return quoteTime == null || quoteTime > (comm.effAsOf || 0);
+  }
   var DASH = "—";
   function fmtUSD(v, dp){ if (!isNum(v)) return DASH; dp = dp==null?2:dp; return (v<0?"-":"") + "$" + Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
   function fmtNum(v, dp){ if (!isNum(v)) return DASH; return v.toLocaleString("en-US",{maximumFractionDigits:dp==null?4:dp}); }
@@ -282,8 +314,7 @@
     var price = null, src = "none", basisOnly = false, liveAge = null;
     // A fetched quote is used only if it is newer than the committed price (or there is no committed price).
     // It is badged "live" only while its own quote time is within LIVE_STALE_MS; an older quote is "delayed".
-    // A future-dated committed as_of is untrustworthy (treated as "now"): any fresh quote fetched this cycle wins over it.
-    var useLive = live && (!comm || live.quoteTime == null || comm.future || live.quoteTime > (comm.effAsOf || 0));
+    var useLive = live && quoteBeats(live.quoteTime, comm);
     if (live && live.quoteTime != null) liveAge = Date.now() - live.quoteTime;
     if (useLive) { price = live.price; src = (liveAge == null || liveAge <= LIVE_STALE_MS) ? "live" : "delayed"; }
     else if (comm) { price = comm.price; src = "committed"; }
@@ -518,7 +549,7 @@
     else errBox.style.display="none";
     var b = benchLevels();   // evaluated before the warning box so future-dated benchmark timestamps are flagged too
     var futureWarn = Object.keys(state.future).map(function(k){
-      return "Committed timestamp is in the future: " + k + " = " + fmtET(state.future[k]) + " (now " + fmtET(Date.now()) + "). It is treated as 'now' when comparing with live quotes; check the writer's clock/time zone.";
+      return "Committed timestamp is in the future: " + k + " = " + fmtET(state.future[k]) + " (now " + fmtET(Date.now()) + "). Live quotes override it only if they are from the current regular session (on or after " + fmtET(sessionOpen(Date.now())) + "); check the writer's clock/time zone.";
     });
     var warns = futureWarn.concat(state.warnings, rec.warn);
     var warnBox = document.getElementById("warnBox");
@@ -567,7 +598,7 @@
       var chg = cur !== null ? cur - start : null;
       cards += card("Since start", fmtSignedUSD(chg), "start " + fmtUSD(start,0) + " &middot; " + fmtPct(chg!==null&&start?chg/start:null), cls(chg));
     }
-    if (b.live && b.committed && !b.committed.future && b.live.quoteTime != null && b.live.quoteTime <= (b.committed.effAsOf || 0)) b.live = null; // older than committed
+    if (b.live && !quoteBeats(b.live.quoteTime, b.committed)) b.live = null; // not newer than committed (same rule as holdings)
     var lvl = b.live ? b.live.price : (b.committed ? b.committed.level : null);
     var bsub = b.live ? ('quote ' + fmtQuoteTime(b.live.quoteTime) + ' &middot; committed ' + fmtLevel(b.committed && b.committed.level))
                       : (b.committed ? "committed " + fmtTime(b.committed.asOf) : "unavailable");
@@ -630,7 +661,7 @@
         else badge = '<span class="badge none" title="No price and no cost: excluded from totals">excluded</span>';
         var commCell = c.comm ? fmtUSD(c.comm.price) + '<span class="asof">' + esc(fmtTime(c.comm.asOf)) + (c.comm.source === "holdings last_price" ? "" : " · prices.json") + '</span>' : DASH;
         var liveCell = c.live ? '<span title="' + esc(liveTip) + '">' + fmtUSD(c.live.price) + '</span><span class="asof">quote ' + esc(fmtQuoteTime(c.live.quoteTime)) +
-          (c.priceSource === "live" || c.priceSource === "delayed" ? "" : " · older than committed, not used") + '</span>' : DASH;
+          (c.priceSource === "live" || c.priceSource === "delayed" ? "" : (c.comm && c.comm.future ? " · before current session, not used" : " · older than committed, not used")) + '</span>' : DASH;
         th += '<tr><td class="tk" data-label="Ticker"><b>'+esc(n.ticker||"?")+'</b> '+badge+'</td>' +
           '<td data-label="Shares">'+fmtNum(n.shares)+'</td>' +
           '<td data-label="Cost basis" title="'+esc(n.costSrc)+'">'+fmtUSD(n.costBasis)+(n.costSrc.indexOf("derived")===0?"*":"")+'</td>' +
@@ -722,7 +753,7 @@
   });
   // pure helpers exposed for testing
   window.__delta = { normalizeHolding:normalizeHolding, holdingsArray:holdingsArray, computeRow:computeRow, committedPrice:committedPrice, periodVal:periodVal,
-    parseYahoo:parseYahoo, parseSpark:parseSpark, teamTotals:teamTotals, state:state, loadAll:loadAll, refreshPrices:refreshPrices, render:render,
+    parseYahoo:parseYahoo, sessionOpen:sessionOpen, quoteBeats:quoteBeats, parseSpark:parseSpark, teamTotals:teamTotals, state:state, loadAll:loadAll, refreshPrices:refreshPrices, render:render,
     config:{ LIVE_STALE_MS:LIVE_STALE_MS, AUTO_MS:AUTO_MS } };
   document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("refreshBtn").addEventListener("click", function(){ fullRefresh(true); });
