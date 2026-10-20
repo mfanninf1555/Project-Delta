@@ -1,0 +1,6 @@
+yfinance==1.7.0
+pandas_market_calendars==5.5.0
+exchange_calendars==4.13.2
+pandas==3.0.6
+numpy==2.5.4
+requests==2.34.2
