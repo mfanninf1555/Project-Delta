@@ -747,7 +747,7 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
             if isinstance(p_, dict) and p_.get("proposal_id") and p_["proposal_id"] not in done_ids:
                 d_ = {"timestamp": ts_now, "run_id": run_id, "proposal_id": p_["proposal_id"], "team": p_.get("team"),
                       "status": "to_rejected", "reasons": [p_.get("team_overseer_rejection_reason", "rejected by Team Overseer")],
-                      "decided_by": p_.get("team_overseer_approval", {}).get("bot_id") or "Team Overseer", "source": fp}
+                      "decided_by": (p_.get("team_overseer_approval") or {}).get("bot_id") or "Team Overseer", "source": fp}
                 decisions.append(d_)
                 done_ids.add(p_["proposal_id"])
                 log(f"TO_REJECTED {d_['team']} {d_['proposal_id']}: {d_['reasons'][0]} (parked in inbox/rejected, not booked)")
