@@ -8,6 +8,8 @@
 
 The dashboard is read-only. It never writes to the repository, never trades, and does not change ledger logic. It reads the committed JSON files (relative paths with a cache-busting query string) and reloads them, and tries for live quotes, every 5 minutes while the tab is visible. Auto-refresh pauses while the tab is hidden, and **Refresh** reloads immediately. All fetches use relative URLs resolved against the page's own address, so the page works from any static host or subpath. All displayed times are shown in America/New_York and labelled ET.
 
+**Caching:** GitHub Pages serves files with `Cache-Control: max-age=600` and ignores the `?v=` query string, so after a commit the page can show data up to ~10 minutes old.
+
 ## Files read
 
 | File | Fields used |
@@ -85,7 +87,9 @@ For each holding, the price comes from the first of these that is available:
 
 A holding with a price but no cost data counts in value only. The amount involved is footnoted.
 
-The headline value card says how many holdings are priced live ("N of M holdings priced live"). The S&P card shows the **S&P 500 total return index** (`sp500_total_return`, and `^SP500TR` live) and its change against `performance.json` `benchmark_baseline.level`, or `day0_intraday_level` while the official baseline is pending.
+The headline value card counts every price source actually used in the total, e.g. "6 of 7 priced from live/delayed quotes (4 live, 2 delayed), 1 committed", plus any "at cost" or "excluded" holdings.
+
+**Future-dated timestamps:** a committed as_of (a holding's `as_of`, `snapshot_latest.json` `as_of` or its S&P TR timestamp, or a `prices.json` as_of) more than 5 minutes ahead of the current time would block every live quote. When comparing live with committed, such a timestamp is treated as "now" and any fresh live quote fetched in the current cycle wins over it. A yellow warning names the field and its value so the writer's clock or time zone can be fixed. The S&P card shows the **S&P 500 total return index** (`sp500_total_return`, and `^SP500TR` live) and its change against `performance.json` `benchmark_baseline.level`, or `day0_intraday_level` while the official baseline is pending.
 
 ## Optional `prices.json` (committed marks)
 
@@ -106,7 +110,7 @@ Yahoo sends no CORS headers, and public proxies are unreliable, so the dependabl
 - `prices.TICKER.price` is required. `prices.TICKER.as_of` is optional and defaults to the top-level `as_of`. Ticker matching ignores case. A bare number (`"KO": 62.0`) is also accepted.
 - `sp500_total_return` may be an object (`level`, optional `as_of`) or a number (uses the top-level `as_of`).
 - A `prices.json` price is used only when it is **newer** than the holding's own `last_price`. The same rule applies to the benchmark level versus `snapshot_latest.json`.
-- If `prices.json` is absent (HTTP 404), nothing changes. If it is present but broken, an error is shown and the last good copy from the session is used.
+- If `prices.json` is absent (HTTP 404, the expected state until a writer is approved), it is ignored quietly, apart from the browser's own network log line. If it is present but fails to load or parse, an error is shown, the footer says "prices.json failed to load/parse", and the last good copy from the session is used if there is one.
 - Like every other file, it is read-only to the dashboard and not part of the ledger.
 
 ### Proposal only: automated price commits (NOT implemented)

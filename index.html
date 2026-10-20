@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <title>Project-Delta Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%CE%94%3C/text%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
@@ -117,6 +118,7 @@
     <div id="priceStatus">Live prices: not yet fetched.</div>
     <div id="committedStatus"></div>
     <div>Data comes from the JSON files committed to this repository (snapshot_latest.json, performance.json, optional prices.json, teams/team1&ndash;4). Live quotes are best-effort and display-only: your browser asks Yahoo Finance directly or through a public CORS proxy, and a live quote older than the staleness limit is dropped. Live values never feed the ledger. Price order: live (fresh) &rarr; committed (newest of holdings last_price / prices.json) &rarr; cost basis (flagged).</div>
+    <div>Note: GitHub Pages caches files for up to 10 minutes (max-age=600), so a new commit can take up to ~10 minutes to appear here.</div>
   </footer>
 </div>
 <script>
@@ -137,6 +139,7 @@
   var FETCH_TIMEOUT = 8000, QUOTE_TIMEOUT = 6000;
   var BACKOFF_MIN_MS = 5*60*1000, BACKOFF_MAX_MS = 60*60*1000;
   var RECON_TOLERANCE = 1.00;       // dollars
+  var FUTURE_SKEW_MS = 5*60*1000;   // committed as_of more than this ahead of now is flagged as future-dated
   var TZ = "America/New_York";
   var LS_KEY = "projectDelta.liveMethod";
 
@@ -146,7 +149,8 @@
     errors:[], warnings:[], fileStatus:{},
     live:{},                     // SYM -> {price, quoteTime(ms|null), fetchedAt(ms), source}
     liveMeta:{ lastAttempt:null, lastSuccess:null, lastResult:"", failures:0, backoffUntil:0 },
-    lastLoad:null
+    lastLoad:null,
+    future:{}                    // label -> future-dated committed as_of (ms), collected per render
   };
 
   // ---------- helpers ----------
@@ -155,6 +159,13 @@
   function pick(obj, keys){ if (!obj || typeof obj !== "object") return null; for (var i=0;i<keys.length;i++){ var n = num(obj[keys[i]]); if (n !== null) return n; } return null; }
   function pickStr(obj, keys){ if (!obj || typeof obj !== "object") return null; for (var i=0;i<keys.length;i++){ var v=obj[keys[i]]; if (typeof v === "string" && v.trim()) return v.trim(); } return null; }
   function toMs(v){ if (v == null || v === "") return null; if (isNum(v)) return v < 1e12 ? v*1000 : v; var d = Date.parse(v); return isNaN(d) ? null : d; }
+  // A committed as_of in the future would block every live quote; treat it as "now" for comparisons and flag it.
+  function effTime(ms, label){
+    if (ms == null) return null;
+    var now = Date.now();
+    if (ms > now + FUTURE_SKEW_MS){ if (label) state.future[label] = ms; return now; }
+    return ms;
+  }
   var DASH = "—";
   function fmtUSD(v, dp){ if (!isNum(v)) return DASH; dp = dp==null?2:dp; return (v<0?"-":"") + "$" + Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
   function fmtNum(v, dp){ if (!isNum(v)) return DASH; return v.toLocaleString("en-US",{maximumFractionDigits:dp==null?4:dp}); }
@@ -243,14 +254,18 @@
     if (e == null) return null;
     var price = isNum(e) || typeof e === "string" ? num(e) : pick(e, ["price","last_price","close"]);
     if (price === null) return null;
-    return { price:price, asOf: (e && typeof e === "object" ? toMs(e.as_of) : null) || toMs(p.as_of), source: (e && e.source) || p.source || "prices.json" };
+    var own = e && typeof e === "object" ? toMs(e.as_of) : null;
+    return { price:price, asOf: own || toMs(p.as_of), asOfLabel: own ? "prices.json prices." + sym + ".as_of" : "prices.json as_of", source: (e && e.source) || p.source || "prices.json" };
   }
   // Committed price = newest of holding.last_price and prices.json; holding as_of defaults to the snapshot time.
   function committedPrice(n){
     var snapAsOf = toMs(state.snapshot && state.snapshot.as_of);
-    var hp = n.lastPrice !== null ? { price:n.lastPrice, asOf:n.lastPriceAsOf || snapAsOf, source:"holdings last_price" } : null;
+    var hp = n.lastPrice !== null ? { price:n.lastPrice, asOf:n.lastPriceAsOf || snapAsOf, source:"holdings last_price",
+      asOfLabel: n.lastPriceAsOf ? "holdings as_of for " + n.ticker : "snapshot_latest.json as_of" } : null;
     var pp = pricesEntry(n.ticker);
-    if (hp && pp) return ((pp.asOf || 0) > (hp.asOf || 0)) ? pp : hp;
+    if (hp){ hp.effAsOf = effTime(hp.asOf, hp.asOfLabel); hp.future = hp.effAsOf !== hp.asOf; }
+    if (pp){ pp.effAsOf = effTime(pp.asOf, pp.asOfLabel); pp.future = pp.effAsOf !== pp.asOf; }
+    if (hp && pp) return ((pp.effAsOf || 0) > (hp.effAsOf || 0)) ? pp : hp;
     return hp || pp;
   }
   function freshLive(sym){
@@ -267,7 +282,8 @@
     var price = null, src = "none", basisOnly = false, liveAge = null;
     // A fetched quote is used only if it is newer than the committed price (or there is no committed price).
     // It is badged "live" only while its own quote time is within LIVE_STALE_MS; an older quote is "delayed".
-    var useLive = live && (!comm || live.quoteTime == null || live.quoteTime > (comm.asOf || 0));
+    // A future-dated committed as_of is untrustworthy (treated as "now"): any fresh quote fetched this cycle wins over it.
+    var useLive = live && (!comm || live.quoteTime == null || comm.future || live.quoteTime > (comm.effAsOf || 0));
     if (live && live.quoteTime != null) liveAge = Date.now() - live.quoteTime;
     if (useLive) { price = live.price; src = (liveAge == null || liveAge <= LIVE_STALE_MS) ? "live" : "delayed"; }
     else if (comm) { price = comm.price; src = "committed"; }
@@ -404,7 +420,7 @@
   function teamTotals(t){
     var td = state.teams[t] || {};
     var res = { cash:td.cash, committedValue:td.value, status:td.holdingsStatus, msg:td.holdingsMsg, rows:[], cost:0, holdingsValue:0, gl:0,
-                atCost:0, excluded:0, derived:0, live:0, priced:0, committedHoldingsValue:0, committedHoldingsOK:true };
+                atCost:0, excluded:0, derived:0, live:0, delayed:0, committed:0, priced:0, committedHoldingsValue:0, committedHoldingsOK:true };
     if (!td.holdings){
       // Holdings unknown (fetch failed, no earlier good copy): fall back to the committed team value.
       res.unknown = true;
@@ -417,6 +433,8 @@
     res.rows.forEach(function(r){
       if (r.n.costSrc.indexOf("derived") === 0) res.derived++;
       if (r.c.priceSource === "live") res.live++;
+      if (r.c.priceSource === "delayed") res.delayed++;
+      if (r.c.priceSource === "committed") res.committed++;
       res.priced++;
       if (r.c.priceSource === "cost") res.atCost++;
       if (r.c.value === null) { res.excluded++; res.priced--; return; }
@@ -441,10 +459,12 @@
     var s = state.snapshot || {}, p = state.performance || {}, pr = state.prices || {};
     var snapLvl = num(s.sp500_total_return), snapAt = toMs((s.sp500_total_return_source && s.sp500_total_return_source.bar_timestamp) || s.as_of);
     if (snapLvl === null && s.sp500_total_return && typeof s.sp500_total_return === "object") snapLvl = pick(s.sp500_total_return, ["level","price"]);
-    var c = snapLvl !== null ? { level:snapLvl, asOf:snapAt, source:"snapshot_latest.json" } : null;
+    var c = snapLvl !== null ? { level:snapLvl, asOf:snapAt, effAsOf:effTime(snapAt, "snapshot_latest.json S&P TR timestamp"), source:"snapshot_latest.json" } : null;
+    if (c) c.future = c.effAsOf !== c.asOf;
     var prv = pr.sp500_total_return, prLvl = null, prAt = null;
     if (prv != null){ if (typeof prv === "object"){ prLvl = pick(prv, ["level","price"]); prAt = toMs(prv.as_of) || toMs(pr.as_of); } else { prLvl = num(prv); prAt = toMs(pr.as_of); } }
-    if (prLvl !== null && (!c || (prAt||0) > (c.asOf||0))) c = { level:prLvl, asOf:prAt, source:"prices.json" };
+    var prEff = effTime(prAt, "prices.json sp500_total_return as_of");
+    if (prLvl !== null && (!c || (prEff||0) > (c.effAsOf||0))) c = { level:prLvl, asOf:prAt, effAsOf:prEff, future: prEff !== prAt, source:"prices.json" };
     var bl = p.benchmark_baseline || {};
     var base = num(bl.level), baseLbl = "official inception close";
     if (base === null){ base = num(bl.day0_intraday_level); baseLbl = "Day-0 intraday level (official close pending)"; }
@@ -486,6 +506,9 @@
 
   function render(){
     var s = state.snapshot || {}, p = state.performance || {};
+    state.future = {};
+    effTime(toMs(s.as_of), "snapshot_latest.json as_of");
+    if (state.prices) effTime(toMs(state.prices.as_of), "prices.json as_of");
     var totals = {};
     TEAMS.forEach(function(t){ totals[t] = teamTotals(t); });
     var rec = reconcile(totals);
@@ -493,7 +516,11 @@
     var errBox = document.getElementById("errBox");
     if (state.errors.length){ errBox.style.display="block"; errBox.innerHTML = "<b>Data file problems:</b><br>" + state.errors.map(esc).join("<br>"); }
     else errBox.style.display="none";
-    var warns = state.warnings.concat(rec.warn);
+    var b = benchLevels();   // evaluated before the warning box so future-dated benchmark timestamps are flagged too
+    var futureWarn = Object.keys(state.future).map(function(k){
+      return "Committed timestamp is in the future: " + k + " = " + fmtET(state.future[k]) + " (now " + fmtET(Date.now()) + "). It is treated as 'now' when comparing with live quotes; check the writer's clock/time zone.";
+    });
+    var warns = futureWarn.concat(state.warnings, rec.warn);
     var warnBox = document.getElementById("warnBox");
     if (warns.length){ warnBox.style.display="block"; warnBox.innerHTML = "<b>Warnings:</b><br>" + warns.map(function(w){ return "⚠ " + esc(w); }).join("<br>"); }
     else warnBox.style.display="none";
@@ -503,14 +530,14 @@
       (state.lastLoad ? " &middot; Files reloaded " + fmtET(state.lastLoad, true) : "");
 
     var sumTeams = 0, teamsOK = true, sumCash = 0, cashOK = true, sumGL = 0, sumCost = 0, invested = 0, investedOK = true;
-    var nHold = 0, nLive = 0, nCost = 0, nExcl = 0, unknownTeams = [];
+    var nHold = 0, nLive = 0, nDelayed = 0, nComm = 0, nCost = 0, nExcl = 0, unknownTeams = [];
     TEAMS.forEach(function(t){
       var tt = totals[t];
       if (tt.liveTotal === null) teamsOK = false; else sumTeams += tt.liveTotal;
       if (!isNum(tt.cash)) cashOK = false; else sumCash += tt.cash;
       if (tt.holdingsValue === null) investedOK = false; else invested += tt.holdingsValue;
       if (tt.unknown) unknownTeams.push(t); else { sumGL += tt.gl; sumCost += tt.cost; }
-      nHold += tt.rows.length; nLive += tt.live; nCost += tt.atCost; nExcl += tt.excluded;
+      nHold += tt.rows.length; nLive += tt.live; nDelayed += tt.delayed; nComm += tt.committed; nCost += tt.atCost; nExcl += tt.excluded;
     });
     var unalloc = num(s.unallocated_cash) || 0;
     var committedTotal = num(s.total_value);
@@ -520,7 +547,13 @@
     var start = p.account ? num(p.account.starting_value) : null;
 
     var cards = "";
-    var liveNote = nHold ? (nLive ? nLive + " of " + nHold + " holdings priced live" : "committed prices (0 of " + nHold + " live)") : "no holdings";
+    // Counts every price source actually used in the total.
+    var nQuote = nLive + nDelayed, srcParts = [];
+    if (nComm) srcParts.push(nComm + " committed");
+    if (nCost) srcParts.push(nCost + " at cost");
+    if (nExcl) srcParts.push(nExcl + " excluded");
+    var liveNote = nHold ? (nQuote + " of " + nHold + " priced from live/delayed quotes" + (nQuote ? " (" + nLive + " live, " + nDelayed + " delayed)" : "") +
+      (srcParts.length ? ", " + srcParts.join(", ") : "")) : "no holdings";
     cards += card("Total account value", fmtUSD(curTotal !== null ? curTotal : committedTotal),
       liveNote + " &middot; committed: " + fmtUSD(committedTotal) + (unknownTeams.length ? " &middot; " + unknownTeams.length + " team(s) at committed value" : ""));
     cards += card("Cash", fmtUSD(totalCash), (unalloc ? "unallocated: " + fmtUSD(unalloc) + " &middot; " : "") + "snapshot: " + fmtUSD(num(s.cash)));
@@ -534,8 +567,7 @@
       var chg = cur !== null ? cur - start : null;
       cards += card("Since start", fmtSignedUSD(chg), "start " + fmtUSD(start,0) + " &middot; " + fmtPct(chg!==null&&start?chg/start:null), cls(chg));
     }
-    var b = benchLevels();
-    if (b.live && b.committed && b.live.quoteTime != null && b.live.quoteTime <= (b.committed.asOf || 0)) b.live = null; // older than committed
+    if (b.live && b.committed && !b.committed.future && b.live.quoteTime != null && b.live.quoteTime <= (b.committed.effAsOf || 0)) b.live = null; // older than committed
     var lvl = b.live ? b.live.price : (b.committed ? b.committed.level : null);
     var bsub = b.live ? ('quote ' + fmtQuoteTime(b.live.quoteTime) + ' &middot; committed ' + fmtLevel(b.committed && b.committed.level))
                       : (b.committed ? "committed " + fmtTime(b.committed.asOf) : "unavailable");
@@ -626,8 +658,10 @@
 
     var pf = state.fileStatus["prices.json"];
     var pr = state.prices;
-    document.getElementById("committedStatus").textContent = pr ? ("Committed prices.json as of " + fmtTime(pr.as_of) + (pr.source ? " (" + pr.source + ")" : "") + (pf && pf.stale ? " — last good load; latest fetch failed" : "") + ".")
-      : "No prices.json committed; committed prices come from each holding's last_price (as of the holding's as_of, else the snapshot time).";
+    var pfBroken = pf && !pf.ok && pf.status !== "missing";
+    document.getElementById("committedStatus").textContent = pr ? ("Committed prices.json as of " + fmtTime(pr.as_of) + (pr.source ? " (" + pr.source + ")" : "") + (pf && pf.stale ? " — last good load; latest fetch failed (" + pf.msg + ")" : "") + ".")
+      : pfBroken ? ("prices.json failed to load/parse (" + pf.msg + "); committed prices come from each holding's last_price.")
+      : "No prices.json committed (optional); committed prices come from each holding's last_price (as of the holding's as_of, else the snapshot time).";
     renderPriceStatus();
   }
 
