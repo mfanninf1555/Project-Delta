@@ -1,0 +1,1187 @@
+[2026-10-20T20:35:38Z] pre-run integrity OK: ledger lines=1, team files match replay
+[2026-10-20T20:35:38Z] corporate actions booked: 0
+[2026-10-20T20:35:38Z] TO_REJECTED team1 team1-20261020-SNOW: Name-slot budget under 8-name cap; lowest conviction of M2's three given -17% GAAP op margin and heavy SBC. (parked in inbox/rejected, not booked)
+[2026-10-20T20:35:38Z] TO_REJECTED team2 T2-IM3-2026-10-20-1630-02: Rejected by Team 2 Overseer - Delta (relayed 2026-10-20 ~12:54 ET); do not book (parked in inbox/rejected, not booked)
+[2026-10-20T20:35:39Z] APPROVED  team1 team1-20261020-MELI: ok
+[2026-10-20T20:35:39Z] APPROVED  team1 team1-20261020-DDOG: ok
+[2026-10-20T20:35:39Z] APPROVED  team1 team1-20261020-NOW: ok
+[2026-10-20T20:35:39Z] APPROVED  team1 team1-20261020-CRDO: ok
+[2026-10-20T20:35:39Z] APPROVED  team1 team1-20261020-TSM: ok
+[2026-10-20T20:35:39Z] APPROVED  team1 team1-20261020-AMZN: ok
+[2026-10-20T20:35:39Z] APPROVED  team1 team1-20261020-GOOGL: ok
+[2026-10-20T20:35:39Z] APPROVED  team2 team2-20261020-ASML: ok
+[2026-10-20T20:35:39Z] APPROVED  team2 team2-20261020-MSFT: ok
+[2026-10-20T20:35:39Z] APPROVED  team2 team2-20261020-SPGI: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 team2-20261020-V: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 team2-20261020-COST: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 team2-20261020-MCD: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 team2-20261020-PG: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 T2-IM3-2026-10-20-1630-01: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 T2-IM3-2026-10-20-1630-03: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 team2-20261020-BRK-B: ok
+[2026-10-20T20:35:40Z] APPROVED  team2 team2-20261020-MRSH: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-APA: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-APP: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-EOG: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-FTNT: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-GOOG: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-GOOGL: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-IDXX: ok
+[2026-10-20T20:35:40Z] APPROVED  team3 team3-20261020-M3-INCY: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-LLY: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-META: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-MNST: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-MU: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-NEM: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-NVDA: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-PLTR: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-RDDT: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-RMD: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-SNDK: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-TPL: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-M3-VRTX: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-APA: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-BE: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-CNC: ok
+[2026-10-20T20:35:41Z] APPROVED  team3 team3-20261020-DELL: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-FCX: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-ILMN: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-INTC: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-LITE: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-MPC: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-MRK: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-MRNA: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-MU: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-NUE: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-PSX: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-SNDK: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-STLD: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-TGT: ok
+[2026-10-20T20:35:42Z] APPROVED  team3 team3-20261020-TRGP: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-VLO: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-VTRS: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-AMCR: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-APA: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-CCL: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-CF: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-CI: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-CMCSA: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-CTSH: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-DAL: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-DECK: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-DHI: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-EOG: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-EQT: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-EXE: ok
+[2026-10-20T20:35:43Z] APPROVED  team3 team3-20261020-M1-FDX: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-FSLR: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-GEN: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-NEM: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-OXY: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-PHM: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-STZ: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-SWK: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-T: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-TMUS: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-UHS: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M1-VZ: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M4-ALL: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M4-BMY: ok
+[2026-10-20T20:35:44Z] APPROVED  team3 team3-20261020-M4-CF: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-ED: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-FDX: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-GM: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-GOOGL: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-HLT: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-HON: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-HST: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-KO: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-MO: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-MU: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-NUE: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-ROST: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-SNA: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-SPG: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-TGT: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-TRV: ok
+[2026-10-20T20:35:45Z] APPROVED  team3 team3-20261020-M4-VRSN: ok
+[2026-10-20T20:35:45Z] APPROVED  team4 team4-20261020-AVGO: ok
+[2026-10-20T20:35:45Z] APPROVED  team4 team4-20261020-NVDA: ok
+[2026-10-20T20:35:46Z] APPROVED  team4 team4-20261020-VRT: ok
+[2026-10-20T20:35:46Z] APPROVED  team4 team4-20261020-CEG: ok
+[2026-10-20T20:35:46Z] APPROVED  team4 team4-20261020-GLDM: ok
+[2026-10-20T20:35:46Z] APPROVED  team4 team4-20261020-NOC: ok
+[2026-10-20T20:35:46Z] APPROVED  team4 team4-20261020-RTX: ok
+[2026-10-20T20:35:46Z] APPROVED  team4 team4-20261020-VST: ok
+[2026-10-20T20:35:46Z] APPROVED  team4 team4-20261020-XLF: ok
+[2026-10-20T20:35:46Z] reconcile: sum(team values)=1,000,000.01 + unallocated=0.00 vs master=1,000,000.01 diff=-0.0
+[2026-10-20T20:35:46Z] approved=112 rejected=2 deferred=0 new_lines=112
+
+SUMMARY {
+  "run_id": "2026-10-20_1630",
+  "slot": "1630",
+  "dry_run": false,
+  "now_et": "2026-10-20T16:35:37.495100-04:00",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 1000000.01,
+    "unallocated_cash": 0.0,
+    "master_total": 1000000.01,
+    "diff": -0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-10-20",
+  "approved": 112,
+  "rejected": 2,
+  "deferred": 0,
+  "corporate_actions": 0,
+  "new_ledger_lines": 112,
+  "total_value": 1000000.01,
+  "team_values": {
+    "team1": 250000.0,
+    "team2": 250000.0,
+    "team3": 250000.01,
+    "team4": 250000.0
+  },
+  "team_cash": {
+    "team1": 30705.62,
+    "team2": 34598.48,
+    "team3": 11266.2,
+    "team4": 78453.3
+  },
+  "sp500tr": 17305.41015625,
+  "decisions": [
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-SNOW",
+      "status": "to_rejected",
+      "reasons": [
+        "Name-slot budget under 8-name cap; lowest conviction of M2's three given -17% GAAP op margin and heavy SBC."
+      ],
+      "shares": null,
+      "decision_price": null,
+      "amount": null
+    },
+    {
+      "team": "team2",
+      "proposal_id": "T2-IM3-2026-10-20-1630-02",
+      "status": "to_rejected",
+      "reasons": [
+        "Rejected by Team 2 Overseer - Delta (relayed 2026-10-20 ~12:54 ET); do not book"
+      ],
+      "shares": null,
+      "decision_price": null,
+      "amount": null
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-MELI",
+      "status": "approved",
+      "reasons": [],
+      "shares": 19.952114,
+      "decision_price": 1879.5,
+      "amount": 37500.0
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-DDOG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 97.0,
+      "decision_price": 256.42999267578125,
+      "amount": 24873.71
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-NOW",
+      "status": "approved",
+      "reasons": [],
+      "shares": 202.0,
+      "decision_price": 149.5399932861328,
+      "amount": 30207.08
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-CRDO",
+      "status": "approved",
+      "reasons": [],
+      "shares": 125.0,
+      "decision_price": 171.50999450683594,
+      "amount": 21438.75
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-TSM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 95.0,
+      "decision_price": 425.0799865722656,
+      "amount": 40382.6
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-AMZN",
+      "status": "approved",
+      "reasons": [],
+      "shares": 124.0,
+      "decision_price": 262.6300048828125,
+      "amount": 32566.12
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261020-GOOGL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 95.0,
+      "decision_price": 340.2749938964844,
+      "amount": 32326.12
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-ASML",
+      "status": "approved",
+      "reasons": [],
+      "shares": 10.0,
+      "decision_price": 1630.8399658203125,
+      "amount": 16308.4
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-MSFT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 35.0,
+      "decision_price": 531.8699951171875,
+      "amount": 18615.45
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-SPGI",
+      "status": "approved",
+      "reasons": [],
+      "shares": 40.0,
+      "decision_price": 438.1199951171875,
+      "amount": 17524.8
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-V",
+      "status": "approved",
+      "reasons": [],
+      "shares": 46.0,
+      "decision_price": 406.57000732421875,
+      "amount": 18702.22
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-COST",
+      "status": "approved",
+      "reasons": [],
+      "shares": 21.0,
+      "decision_price": 994.6099853515625,
+      "amount": 20886.81
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-MCD",
+      "status": "approved",
+      "reasons": [],
+      "shares": 85.0,
+      "decision_price": 246.52000427246094,
+      "amount": 20954.2
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-PG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 130.0,
+      "decision_price": 159.32000732421875,
+      "amount": 20711.6
+    },
+    {
+      "team": "team2",
+      "proposal_id": "T2-IM3-2026-10-20-1630-01",
+      "status": "approved",
+      "reasons": [],
+      "shares": 44.0,
+      "decision_price": 557.9299926757812,
+      "amount": 24548.92
+    },
+    {
+      "team": "team2",
+      "proposal_id": "T2-IM3-2026-10-20-1630-03",
+      "status": "approved",
+      "reasons": [],
+      "shares": 81.0,
+      "decision_price": 245.5,
+      "amount": 19885.5
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-BRK-B",
+      "status": "approved",
+      "reasons": [],
+      "shares": 46.0,
+      "decision_price": 539.8200073242188,
+      "amount": 24831.72
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261020-MRSH",
+      "status": "approved",
+      "reasons": [],
+      "shares": 65.0,
+      "decision_price": 191.25999450683594,
+      "amount": 12431.9
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-APA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 62.0,
+      "decision_price": 49.89500045776367,
+      "amount": 3093.49
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-APP",
+      "status": "approved",
+      "reasons": [],
+      "shares": 11.0,
+      "decision_price": 272.4599914550781,
+      "amount": 2997.06
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-EOG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 19.0,
+      "decision_price": 157.91000366210938,
+      "amount": 3000.29
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-FTNT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 18.0,
+      "decision_price": 170.92999267578125,
+      "amount": 3076.74
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-GOOG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 9.0,
+      "decision_price": 336.3999938964844,
+      "amount": 3027.6
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-GOOGL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 9.0,
+      "decision_price": 340.2749938964844,
+      "amount": 3062.47
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-IDXX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 5.0,
+      "decision_price": 557.9299926757812,
+      "amount": 2789.65
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-INCY",
+      "status": "approved",
+      "reasons": [],
+      "shares": 26.0,
+      "decision_price": 116.61499786376953,
+      "amount": 3031.99
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-LLY",
+      "status": "approved",
+      "reasons": [],
+      "shares": 2.0,
+      "decision_price": 1283.6600341796875,
+      "amount": 2567.32
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-META",
+      "status": "approved",
+      "reasons": [],
+      "shares": 4.0,
+      "decision_price": 694.25,
+      "amount": 2777.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-MNST",
+      "status": "approved",
+      "reasons": [],
+      "shares": 66.0,
+      "decision_price": 47.040000915527344,
+      "amount": 3104.64
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-MU",
+      "status": "approved",
+      "reasons": [],
+      "shares": 3.0,
+      "decision_price": 896.0700073242188,
+      "amount": 2688.21
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-NEM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 26.0,
+      "decision_price": 116.80999755859375,
+      "amount": 3037.06
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-NVDA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 14.0,
+      "decision_price": 216.47000122070312,
+      "amount": 3030.58
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-PLTR",
+      "status": "approved",
+      "reasons": [],
+      "shares": 16.0,
+      "decision_price": 192.60000610351562,
+      "amount": 3081.6
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-RDDT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 19.0,
+      "decision_price": 155.64999389648438,
+      "amount": 2957.35
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-RMD",
+      "status": "approved",
+      "reasons": [],
+      "shares": 12.0,
+      "decision_price": 245.5,
+      "amount": 2946.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-SNDK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 2.0,
+      "decision_price": 1365.3800048828125,
+      "amount": 2730.76
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-TPL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 9.0,
+      "decision_price": 342.1700134277344,
+      "amount": 3079.53
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M3-VRTX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 6.0,
+      "decision_price": 514.6500244140625,
+      "amount": 3087.9
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-APA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 62.0,
+      "decision_price": 49.89500045776367,
+      "amount": 3093.49
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-BE",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 222.64999389648438,
+      "amount": 2894.45
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-CNC",
+      "status": "approved",
+      "reasons": [],
+      "shares": 45.0,
+      "decision_price": 70.80999755859375,
+      "amount": 3186.45
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-DELL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 6.0,
+      "decision_price": 461.55999755859375,
+      "amount": 2769.36
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-FCX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 44.0,
+      "decision_price": 68.87000274658203,
+      "amount": 3030.28
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-ILMN",
+      "status": "approved",
+      "reasons": [],
+      "shares": 11.0,
+      "decision_price": 267.92999267578125,
+      "amount": 2947.23
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-INTC",
+      "status": "approved",
+      "reasons": [],
+      "shares": 33.0,
+      "decision_price": 91.69000244140625,
+      "amount": 3025.77
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-LITE",
+      "status": "approved",
+      "reasons": [],
+      "shares": 3.0,
+      "decision_price": 822.510009765625,
+      "amount": 2467.53
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-MPC",
+      "status": "approved",
+      "reasons": [],
+      "shares": 6.0,
+      "decision_price": 475.0400085449219,
+      "amount": 2850.24
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-MRK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 21.0,
+      "decision_price": 148.3000030517578,
+      "amount": 3114.3
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-MRNA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 242.0800018310547,
+      "amount": 3147.04
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-MU",
+      "status": "approved",
+      "reasons": [],
+      "shares": 3.0,
+      "decision_price": 896.0700073242188,
+      "amount": 2688.21
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-NUE",
+      "status": "approved",
+      "reasons": [],
+      "shares": 11.0,
+      "decision_price": 261.5,
+      "amount": 2876.5
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-PSX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 10.0,
+      "decision_price": 291.0299987792969,
+      "amount": 2910.3
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-SNDK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 2.0,
+      "decision_price": 1365.3800048828125,
+      "amount": 2730.76
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-STLD",
+      "status": "approved",
+      "reasons": [],
+      "shares": 12.0,
+      "decision_price": 244.3699951171875,
+      "amount": 2932.44
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-TGT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 20.0,
+      "decision_price": 154.0,
+      "amount": 3080.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-TRGP",
+      "status": "approved",
+      "reasons": [],
+      "shares": 10.0,
+      "decision_price": 292.6499938964844,
+      "amount": 2926.5
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-VLO",
+      "status": "approved",
+      "reasons": [],
+      "shares": 7.0,
+      "decision_price": 433.4200134277344,
+      "amount": 3033.94
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-VTRS",
+      "status": "approved",
+      "reasons": [],
+      "shares": 171.0,
+      "decision_price": 18.649999618530273,
+      "amount": 3189.15
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-AMCR",
+      "status": "approved",
+      "reasons": [],
+      "shares": 55.0,
+      "decision_price": 44.72999954223633,
+      "amount": 2460.15
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-APA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 49.0,
+      "decision_price": 49.89500045776367,
+      "amount": 2444.86
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-CCL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 89.0,
+      "decision_price": 27.059999465942383,
+      "amount": 2408.34
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-CF",
+      "status": "approved",
+      "reasons": [],
+      "shares": 20.0,
+      "decision_price": 117.93000030517578,
+      "amount": 2358.6
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-CI",
+      "status": "approved",
+      "reasons": [],
+      "shares": 8.0,
+      "decision_price": 306.6000061035156,
+      "amount": 2452.8
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-CMCSA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 110.0,
+      "decision_price": 22.360000610351562,
+      "amount": 2459.6
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-CTSH",
+      "status": "approved",
+      "reasons": [],
+      "shares": 36.0,
+      "decision_price": 68.18000030517578,
+      "amount": 2454.48
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-DAL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 32.0,
+      "decision_price": 76.66000366210938,
+      "amount": 2453.12
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-DECK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 27.0,
+      "decision_price": 87.37000274658203,
+      "amount": 2358.99
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-DHI",
+      "status": "approved",
+      "reasons": [],
+      "shares": 17.0,
+      "decision_price": 140.1699981689453,
+      "amount": 2382.89
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-EOG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 15.0,
+      "decision_price": 157.91000366210938,
+      "amount": 2368.65
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-EQT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 44.0,
+      "decision_price": 54.81999969482422,
+      "amount": 2412.08
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-EXE",
+      "status": "approved",
+      "reasons": [],
+      "shares": 26.0,
+      "decision_price": 92.66999816894531,
+      "amount": 2409.42
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-FDX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 8.0,
+      "decision_price": 298.760009765625,
+      "amount": 2390.08
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-FSLR",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 174.42999267578125,
+      "amount": 2267.59
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-GEN",
+      "status": "approved",
+      "reasons": [],
+      "shares": 101.0,
+      "decision_price": 24.079999923706055,
+      "amount": 2432.08
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-NEM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 20.0,
+      "decision_price": 116.80999755859375,
+      "amount": 2336.2
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-OXY",
+      "status": "approved",
+      "reasons": [],
+      "shares": 39.0,
+      "decision_price": 62.91999816894531,
+      "amount": 2453.88
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-PHM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 21.0,
+      "decision_price": 114.52999877929688,
+      "amount": 2405.13
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-STZ",
+      "status": "approved",
+      "reasons": [],
+      "shares": 18.0,
+      "decision_price": 132.74000549316406,
+      "amount": 2389.32
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-SWK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 26.0,
+      "decision_price": 94.08999633789062,
+      "amount": 2446.34
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-T",
+      "status": "approved",
+      "reasons": [],
+      "shares": 104.0,
+      "decision_price": 23.420000076293945,
+      "amount": 2435.68
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-TMUS",
+      "status": "approved",
+      "reasons": [],
+      "shares": 15.0,
+      "decision_price": 157.75,
+      "amount": 2366.25
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-UHS",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 185.61000061035156,
+      "amount": 2412.93
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M1-VZ",
+      "status": "approved",
+      "reasons": [],
+      "shares": 55.0,
+      "decision_price": 44.540000915527344,
+      "amount": 2449.7
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-ALL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 12.0,
+      "decision_price": 249.91000366210938,
+      "amount": 2998.92
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-BMY",
+      "status": "approved",
+      "reasons": [],
+      "shares": 50.0,
+      "decision_price": 61.68000030517578,
+      "amount": 3084.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-CF",
+      "status": "approved",
+      "reasons": [],
+      "shares": 26.0,
+      "decision_price": 117.93000030517578,
+      "amount": 3066.18
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-ED",
+      "status": "approved",
+      "reasons": [],
+      "shares": 28.0,
+      "decision_price": 111.9800033569336,
+      "amount": 3135.44
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-FDX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 10.0,
+      "decision_price": 298.760009765625,
+      "amount": 2987.6
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-GM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 41.0,
+      "decision_price": 77.08999633789062,
+      "amount": 3160.69
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-GOOGL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 9.0,
+      "decision_price": 340.2749938964844,
+      "amount": 3062.47
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-HLT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 8.0,
+      "decision_price": 359.2900085449219,
+      "amount": 2874.32
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-HON",
+      "status": "approved",
+      "reasons": [],
+      "shares": 14.0,
+      "decision_price": 213.32000732421875,
+      "amount": 2986.48
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-HST",
+      "status": "approved",
+      "reasons": [],
+      "shares": 125.0,
+      "decision_price": 24.799999237060547,
+      "amount": 3100.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-KO",
+      "status": "approved",
+      "reasons": [],
+      "shares": 33.0,
+      "decision_price": 93.48999786376953,
+      "amount": 3085.17
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-MO",
+      "status": "approved",
+      "reasons": [],
+      "shares": 41.0,
+      "decision_price": 74.63999938964844,
+      "amount": 3060.24
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-MU",
+      "status": "approved",
+      "reasons": [],
+      "shares": 3.0,
+      "decision_price": 896.0700073242188,
+      "amount": 2688.21
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-NUE",
+      "status": "approved",
+      "reasons": [],
+      "shares": 12.0,
+      "decision_price": 261.5,
+      "amount": 3138.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-ROST",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 237.24000549316406,
+      "amount": 3084.12
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-SNA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 8.0,
+      "decision_price": 366.4200134277344,
+      "amount": 2931.36
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-SPG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 15.0,
+      "decision_price": 206.99000549316406,
+      "amount": 3104.85
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-TGT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 20.0,
+      "decision_price": 154.0,
+      "amount": 3080.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-TRV",
+      "status": "approved",
+      "reasons": [],
+      "shares": 7.0,
+      "decision_price": 395.7300109863281,
+      "amount": 2770.11
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261020-M4-VRSN",
+      "status": "approved",
+      "reasons": [],
+      "shares": 10.0,
+      "decision_price": 306.5299987792969,
+      "amount": 3065.3
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-AVGO",
+      "status": "approved",
+      "reasons": [],
+      "shares": 52.0,
+      "decision_price": 334.3699951171875,
+      "amount": 17387.24
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-NVDA",
+      "status": "approved",
+      "reasons": [],
+      "shares": 92.0,
+      "decision_price": 216.47000122070312,
+      "amount": 19915.24
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-VRT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 61.0,
+      "decision_price": 203.55999755859375,
+      "amount": 12417.16
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-CEG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 57.0,
+      "decision_price": 258.8399963378906,
+      "amount": 14753.88
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-GLDM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 245.0,
+      "decision_price": 81.4800033569336,
+      "amount": 19962.6
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-NOC",
+      "status": "approved",
+      "reasons": [],
+      "shares": 37.0,
+      "decision_price": 534.0,
+      "amount": 19758.0
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-RTX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 155.0,
+      "decision_price": 193.33999633789062,
+      "amount": 29967.7
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-VST",
+      "status": "approved",
+      "reasons": [],
+      "shares": 116.0,
+      "decision_price": 150.32000732421875,
+      "amount": 17437.12
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261020-XLF",
+      "status": "approved",
+      "reasons": [],
+      "shares": 358.0,
+      "decision_price": 55.720001220703125,
+      "amount": 19947.76
+    }
+  ],
+  "prices_json_tickers": 96
+}
