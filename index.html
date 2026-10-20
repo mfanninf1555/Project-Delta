@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Project-Delta Dashboard</title>
+<style>
+  :root{
+    --bg:#0d1117;--panel:#161b22;--panel2:#1c2330;--border:#30363d;--text:#e6edf3;--muted:#8b949e;
+    --accent:#58a6ff;--pos:#3fb950;--neg:#f85149;--warn:#d29922;
+  }
+  @media (prefers-color-scheme: light){
+    :root{--bg:#f6f8fa;--panel:#ffffff;--panel2:#f0f3f6;--border:#d0d7de;--text:#1f2328;--muted:#59636e;
+      --accent:#0969da;--pos:#1a7f37;--neg:#cf222e;--warn:#9a6700;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1200px;margin:0 auto;padding:16px}
+  header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+  h1{font-size:1.4rem;margin:0}
+  h2{font-size:1.1rem;margin:0 0 10px}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  button{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font:inherit;cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button:disabled{opacity:.6;cursor:wait}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .card .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  .card .value{font-size:1.35rem;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+  .card .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  section.panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+  th,td{padding:6px 10px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+  th{color:var(--muted);font-weight:600;font-size:12px;background:var(--panel2);position:sticky;top:0}
+  th:first-child,td:first-child{text-align:left}
+  tfoot td{font-weight:600;border-top:2px solid var(--border)}
+  .pos{color:var(--pos)} .neg{color:var(--neg)}
+  .badge{display:inline-block;font-size:11px;padding:1px 6px;border-radius:10px;border:1px solid var(--border);margin-left:4px;vertical-align:1px}
+  .badge.live{color:var(--pos);border-color:var(--pos)}
+  .badge.committed{color:var(--warn);border-color:var(--warn)}
+  .team-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+  .team-stats{display:flex;flex-wrap:wrap;gap:14px;font-size:13px}
+  .team-stats b{font-variant-numeric:tabular-nums}
+  .empty{color:var(--muted);padding:10px 0;font-style:italic}
+  .err{background:rgba(248,81,73,.1);border:1px solid var(--neg);color:var(--text);border-radius:8px;padding:10px;margin-bottom:16px;display:none}
+  footer{color:var(--muted);font-size:12px;margin:24px 0 8px}
+  a{color:var(--accent)}
+  @media (max-width:600px){.wrap{padding:10px}.card .value{font-size:1.15rem}th,td{padding:5px 7px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Project-Delta</h1>
+      <div class="muted small">$1M 20-year paper portfolio &middot; paper trading only</div>
+    </div>
+    <div class="controls">
+      <button id="refreshBtn" type="button">Refresh</button>
+      <label class="small muted"><input type="checkbox" id="autoChk" checked> Auto-refresh 60s</label>
+    </div>
+  </header>
+
+  <div class="err" id="errBox"></div>
+
+  <div class="muted small" id="meta" style="margin-bottom:12px">Loading&hellip;</div>
+
+  <div class="cards" id="summaryCards"></div>
+
+  <section class="panel">
+    <h2>Performance vs S&amp;P 500</h2>
+    <div class="muted small" id="benchNote" style="margin-bottom:8px"></div>
+    <div class="scroll"><table id="perfTable"></table></div>
+  </section>
+
+  <div id="teams"></div>
+
+  <footer>
+    <div id="priceStatus">Live prices: not yet fetched.</div>
+    <div>Data: committed JSON files in this repository (snapshot_latest.json, performance.json, teams/team1&ndash;4). Live prices fetched in your browser from Yahoo Finance (directly or via a public CORS proxy); when unavailable, the last-committed price is used. Live values are informational only and are not part of the ledger.</div>
+  </footer>
+</div>
+
+<script>
+"use strict";
+(function(){
+  var TEAMS = ["team1","team2","team3","team4"];
+  var TEAM_NAMES = {
+    team1:"Team 1 — High-conviction concentrated growth",
+    team2:"Team 2 — Quality compounders / wide-moat",
+    team3:"Team 3 — Factor / systematic",
+    team4:"Team 4 — Thematic / macro overlay"
+  };
+  var PERIODS = [["1d","1 Day"],["mtd","MTD"],["qtd","QTD"],["ytd","YTD"],["1y","1 Year"],["3y","3 Year"],["5y","5 Year"],["10y","10 Year"],["since_inception","Since Inception"]];
+  var PERIOD_ALIASES = {"1d":["1d","1_day","day"],"mtd":["mtd","month"],"qtd":["qtd","quarter"],"ytd":["ytd","year_to_date"],"1y":["1y","1yr","1_year"],"3y":["3y","3yr","3_year"],"5y":["5y","5yr","5_year"],"10y":["10y","10yr","10_year"],"since_inception":["since_inception","inception","si"]};
+  var AUTO_MS = 60000, FETCH_TIMEOUT = 8000, QUOTE_TIMEOUT = 6000;
+
+  var state = { snapshot:null, performance:null, teams:{}, live:{}, liveAt:null, spxLive:null, errors:[] };
+
+  // ---------- helpers ----------
+  function isNum(v){ return typeof v === "number" && isFinite(v); }
+  function num(v){ if (isNum(v)) return v; if (typeof v === "string" && v.trim() !== "" && isFinite(+v)) return +v; return null; }
+  function pick(obj, keys){ if (!obj || typeof obj !== "object") return null; for (var i=0;i<keys.length;i++){ var n = num(obj[keys[i]]); if (n !== null) return n; } return null; }
+  function pickStr(obj, keys){ if (!obj || typeof obj !== "object") return null; for (var i=0;i<keys.length;i++){ var v=obj[keys[i]]; if (typeof v === "string" && v.trim()) return v.trim(); } return null; }
+  var DASH = "—";
+  function fmtUSD(v, dp){ if (!isNum(v)) return DASH; dp = dp==null?2:dp; return (v<0?"-":"") + "$" + Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
+  function fmtNum(v, dp){ if (!isNum(v)) return DASH; return v.toLocaleString("en-US",{maximumFractionDigits:dp==null?4:dp}); }
+  function fmtPct(v){ if (!isNum(v)) return DASH; return (v>0?"+":"") + (v*100).toFixed(2) + "%"; }
+  function fmtSignedUSD(v){ if (!isNum(v)) return DASH; return (v>0?"+":"") + fmtUSD(v); }
+  function cls(v){ return !isNum(v) || Math.abs(v) < 1e-12 ? "" : (v>0?"pos":"neg"); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function fmtTime(iso){ if (!iso) return DASH; var d = new Date(iso); if (isNaN(d)) return esc(iso); return d.toLocaleString(undefined,{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"}); }
+
+  // ---------- data loading ----------
+  function fetchWithTimeout(url, ms){
+    var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var t = setTimeout(function(){ if (ctrl) ctrl.abort(); }, ms);
+    return fetch(url, ctrl ? {signal:ctrl.signal, cache:"no-store"} : {cache:"no-store"}).finally(function(){ clearTimeout(t); });
+  }
+  function loadJSON(path){
+    var url = path + (path.indexOf("?")<0?"?":"&") + "v=" + Date.now();
+    return fetchWithTimeout(url, FETCH_TIMEOUT).then(function(r){
+      if (!r.ok) throw new Error(path + ": HTTP " + r.status);
+      return r.text();
+    }).then(function(txt){
+      if (!txt || !txt.trim()) return null;
+      return JSON.parse(txt);
+    }).catch(function(e){ state.errors.push(path + " — " + (e && e.message || e)); return null; });
+  }
+
+  // ---------- holdings normalization ----------
+  function holdingsArray(raw){
+    if (raw == null) return [];
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw === "object"){
+      if (Array.isArray(raw.holdings)) return raw.holdings;
+      if (Array.isArray(raw.positions)) return raw.positions;
+      // object keyed by ticker: {"AAPL": {...}}
+      return Object.keys(raw).filter(function(k){ return raw[k] && typeof raw[k] === "object"; })
+        .map(function(k){ var o = Object.assign({}, raw[k]); if (!o.ticker && !o.symbol) o.ticker = k; return o; });
+    }
+    return [];
+  }
+  function normalizeHolding(h){
+    var ticker = pickStr(h, ["ticker","symbol"]);
+    var shares = pick(h, ["shares","quantity","qty","size"]);
+    var committed = pick(h, ["last_price","price","committed_price","current_price","mark_price","close","last_close"]);
+    var entry = pick(h, ["entry_price","fill_price","decision_price","purchase_price","buy_price"]);
+    var costBasis = pick(h, ["cost_basis","total_cost","cost"]);
+    var avgCost = pick(h, ["avg_cost","average_cost","avg_price","cost_per_share"]);
+    var costSrc = "cost_basis";
+    if (costBasis === null){
+      if (avgCost !== null && shares !== null){ costBasis = shares*avgCost; costSrc = "derived: shares × avg_cost"; }
+      else if (entry !== null && shares !== null){ costBasis = shares*entry; costSrc = "derived: shares × entry price"; }
+      else costSrc = "unavailable";
+    }
+    if (avgCost === null && costBasis !== null && shares) avgCost = costBasis/shares;
+    var committedValue = pick(h, ["market_value","value","current_value"]);
+    if (committed === null && committedValue !== null && shares) committed = committedValue/shares;
+    return { ticker: ticker ? ticker.toUpperCase() : null, shares:shares, costBasis:costBasis, avgCost:avgCost, costSrc:costSrc, committed:committed, raw:h };
+  }
+  function computeRow(n, live){
+    var livePrice = live && isNum(live.price) ? live.price : null;
+    var price = livePrice !== null ? livePrice : n.committed;
+    var value = (price !== null && n.shares !== null) ? price*n.shares : null;
+    var gl = (value !== null && n.costBasis !== null) ? value - n.costBasis : null;
+    var glPct = (gl !== null && n.costBasis) ? gl/n.costBasis : null;
+    return { livePrice:livePrice, priceSource: livePrice!==null ? "live" : (n.committed!==null ? "committed" : "none"), value:value, gl:gl, glPct:glPct };
+  }
+
+  // ---------- performance ----------
+  function periodVal(obj, key){
+    if (!obj || typeof obj !== "object") return null;
+    var al = PERIOD_ALIASES[key] || [key];
+    for (var i=0;i<al.length;i++){ var v = num(obj[al[i]]); if (v !== null) return v; }
+    return null;
+  }
+  // returns are decimal fractions (0.05 = 5%) unless performance.json sets "returns_unit": "percent"
+  function toFrac(v, perf){ if (v === null) return null; return (perf && perf.returns_unit === "percent") ? v/100 : v; }
+
+  // ---------- live prices ----------
+  function yahooUrl(sym){ return "https://query1.finance.yahoo.com/v8/finance/chart/" + encodeURIComponent(sym) + "?range=1d&interval=1d"; }
+  // Fallback chain. Yahoo returns no CORS header, so browsers usually reject the direct calls; public proxies are best-effort.
+  var SOURCES = [
+    {name:"Yahoo direct", url:function(u){ return u; }},
+    {name:"Yahoo direct (query2)", url:function(u){ return u.replace("//query1.","//query2."); }},
+    {name:"allorigins", url:function(u){ return "https://api.allorigins.win/raw?url=" + encodeURIComponent(u); }},
+    {name:"codetabs", url:function(u){ return "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u); }},
+    {name:"corsproxy.io", url:function(u){ return "https://corsproxy.io/?url=" + encodeURIComponent(u); }}
+  ];
+  var preferredSource = 0;
+  function parseYahoo(j){
+    var r = j && j.chart && j.chart.result && j.chart.result[0];
+    var m = r && r.meta;
+    if (!m || !isNum(m.regularMarketPrice)) throw new Error("no price");
+    return { price:m.regularMarketPrice, prevClose: isNum(m.chartPreviousClose)?m.chartPreviousClose:(isNum(m.previousClose)?m.previousClose:null), time: m.regularMarketTime ? new Date(m.regularMarketTime*1000) : null };
+  }
+  function fetchQuote(sym){
+    var base = yahooUrl(sym);
+    var order = [preferredSource].concat(SOURCES.map(function(_,i){ return i; }).filter(function(i){ return i !== preferredSource; }));
+    var idx = 0;
+    function attempt(){
+      if (idx >= order.length) return Promise.reject(new Error("all sources failed"));
+      var si = order[idx++];
+      return fetchWithTimeout(SOURCES[si].url(base), QUOTE_TIMEOUT)
+        .then(function(r){ if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then(function(j){ var q = parseYahoo(j); q.source = SOURCES[si].name; preferredSource = si; return q; })
+        .catch(function(){ return attempt(); });
+    }
+    return attempt();
+  }
+  function allTickers(){
+    var set = {};
+    TEAMS.forEach(function(t){ (state.teams[t] && state.teams[t].holdings || []).forEach(function(n){ if (n.ticker) set[n.ticker] = 1; }); });
+    return Object.keys(set);
+  }
+  var refreshingPrices = false;
+  function refreshPrices(){
+    if (refreshingPrices) return Promise.resolve();
+    refreshingPrices = true;
+    var syms = allTickers().concat(["^GSPC"]);
+    var ok = 0, fail = 0, used = {};
+    // limit concurrency to 4
+    var queue = syms.slice(), results = {};
+    function worker(){
+      if (!queue.length) return Promise.resolve();
+      var s = queue.shift();
+      return fetchQuote(s).then(function(q){ results[s] = q; ok++; used[q.source]=1; }, function(){ fail++; }).then(worker);
+    }
+    var workers = []; for (var i=0;i<Math.min(4,syms.length);i++) workers.push(worker());
+    return Promise.all(workers).then(function(){
+      Object.keys(results).forEach(function(s){ if (s === "^GSPC") state.spxLive = results[s]; else state.live[s] = results[s]; });
+      state.liveAt = new Date();
+      var srcs = Object.keys(used).join(", ");
+      document.getElementById("priceStatus").textContent = "Live prices last refreshed " + state.liveAt.toLocaleTimeString(undefined,{timeZoneName:"short"}) +
+        " — " + ok + " of " + syms.length + " quotes fetched" + (srcs ? " via " + srcs : "") + (fail ? "; " + fail + " fell back to last-committed price." : ".");
+    }).finally(function(){ refreshingPrices = false; render(); });
+  }
+
+  // ---------- rendering ----------
+  function card(label, value, sub, valueCls){
+    return '<div class="card"><div class="label">'+esc(label)+'</div><div class="value '+(valueCls||"")+'">'+value+'</div>'+(sub?'<div class="sub">'+sub+'</div>':'')+'</div>';
+  }
+  function teamTotals(t){
+    var td = state.teams[t] || {};
+    var rows = (td.holdings||[]).map(function(n){ return {n:n, c:computeRow(n, state.live[n.ticker])}; });
+    var cost=0, val=0, gl=0, glCost=0, unpriced=0, noCost=0, derived=0;
+    rows.forEach(function(r){
+      if (r.n.costBasis === null) noCost++; else cost += r.n.costBasis;
+      if (r.n.costSrc.indexOf("derived")===0) derived++;
+      if (r.c.value === null) unpriced++; else val += r.c.value;
+      if (r.c.gl !== null){ gl += r.c.gl; glCost += r.n.costBasis; }
+    });
+    var cash = td.cash;
+    var liveTotal = cash !== null ? cash + val : null;
+    return { rows:rows, cost:cost, holdingsValue:val, cash:cash, committedValue: td.value, liveTotal:liveTotal,
+      gl:gl, glPct: glCost ? gl/glCost : null, unpriced:unpriced, noCost:noCost, derived:derived };
+  }
+  function render(){
+    var s = state.snapshot || {}, p = state.performance || {};
+    var errBox = document.getElementById("errBox");
+    if (state.errors.length){ errBox.style.display="block"; errBox.innerHTML = "<b>Some data files could not be loaded:</b><br>" + state.errors.map(esc).join("<br>"); }
+    else errBox.style.display="none";
+
+    document.getElementById("meta").innerHTML = "Last committed snapshot: <b>" + fmtTime(s.as_of || p.as_of) + "</b>" +
+      (s.inception_date || p.inception_date ? " &middot; Inception: <b>" + esc(s.inception_date || p.inception_date) + "</b>" : "");
+
+    // totals
+    var totals = {}, sumCash = 0, cashOK = true, sumLive = 0, liveOK = true, sumGL = 0, glOK = true, unpricedAll = 0;
+    TEAMS.forEach(function(t){
+      var tt = teamTotals(t); totals[t] = tt;
+      if (tt.cash === null) cashOK = false; else sumCash += tt.cash;
+      if (tt.liveTotal === null) liveOK = false; else sumLive += tt.liveTotal;
+      sumGL += tt.gl; unpricedAll += tt.unpriced;
+    });
+    var unalloc = num(s.unallocated_cash) || 0;
+    var committedTotal = num(s.total_value);
+    if (committedTotal === null && p.account) committedTotal = num(p.account.current_value);
+    var liveTotal = liveOK ? sumLive + unalloc : null;
+    var totalCash = cashOK ? sumCash + unalloc : num(s.cash);
+    var start = p.account ? num(p.account.starting_value) : null;
+    var hasLive = Object.keys(state.live).length > 0;
+
+    var cards = "";
+    cards += card("Total account value", fmtUSD(liveTotal !== null ? liveTotal : committedTotal),
+      (hasLive ? "incl. live prices &middot; " : "") + "committed: " + fmtUSD(committedTotal));
+    cards += card("Cash", fmtUSD(totalCash), (unalloc ? "unallocated: " + fmtUSD(unalloc) + " &middot; " : "") + "snapshot: " + fmtUSD(num(s.cash)));
+    var invested = 0; TEAMS.forEach(function(t){ invested += totals[t].holdingsValue || 0; });
+    cards += card("Invested (positions)", fmtUSD(invested), TEAMS.reduce(function(a,t){ return a + (totals[t].rows.length); },0) + " holdings" + (unpricedAll ? " &middot; " + unpricedAll + " unpriced (excluded)" : ""));
+    cards += card("Unrealized gain/loss", fmtSignedUSD(glOK?sumGL:null), "vs cost basis", cls(glOK?sumGL:null));
+    if (start !== null){
+      var cur = liveTotal !== null ? liveTotal : committedTotal;
+      var chg = cur !== null ? cur - start : null;
+      cards += card("Since start", fmtSignedUSD(chg), "start " + fmtUSD(start,0) + " &middot; " + fmtPct(chg!==null&&start?chg/start:null), cls(chg));
+    }
+    var spxC = num(s.sp500_price);
+    var spxL = state.spxLive ? state.spxLive.price : null;
+    cards += card("S&P 500 (^GSPC)", fmtNum(spxL !== null ? spxL : spxC, 2),
+      spxL !== null ? ('live &middot; committed ' + fmtNum(spxC,2) + (spxC ? ' (<span class="'+cls(spxL-spxC)+'">' + fmtPct((spxL-spxC)/spxC) + '</span>)' : ''))
+                    : "last committed");
+    document.getElementById("summaryCards").innerHTML = cards;
+
+    // performance table
+    var acct = p.account || {};
+    var bench = p.benchmark ? esc(p.benchmark) : "S&amp;P 500";
+    var bl = p.benchmark_baseline;
+    document.getElementById("benchNote").innerHTML = "Benchmark: " + bench + (p.method ? " &middot; " + esc(p.method) : "") +
+      (bl && bl.status ? "<br>Baseline: " + esc(bl.status) : "") + (p.as_of ? "<br>As of " + fmtTime(p.as_of) : "");
+    var rowsDef = [["Portfolio", acct.returns],["S&P 500", acct.benchmark_returns]];
+    var html = "<thead><tr><th></th>" + PERIODS.map(function(x){ return "<th>"+x[1]+"</th>"; }).join("") + "</tr></thead><tbody>";
+    rowsDef.forEach(function(rd){
+      html += "<tr><td>"+esc(rd[0])+"</td>" + PERIODS.map(function(x){ var v = toFrac(periodVal(rd[1], x[0]), p); return '<td class="'+cls(v)+'">'+fmtPct(v)+"</td>"; }).join("") + "</tr>";
+    });
+    html += "<tr><td><b>Difference</b></td>" + PERIODS.map(function(x){
+      var a = toFrac(periodVal(acct.returns, x[0]), p), b = toFrac(periodVal(acct.benchmark_returns, x[0]), p);
+      var d = (a !== null && b !== null) ? a-b : null;
+      return '<td class="'+cls(d)+'"><b>'+fmtPct(d)+"</b></td>";
+    }).join("") + "</tr>";
+    // per-team rows
+    var pt = p.teams || {};
+    TEAMS.forEach(function(t){
+      if (!pt[t]) return;
+      html += '<tr><td class="muted">'+esc(t.replace("team","Team "))+"</td>" + PERIODS.map(function(x){ var v = toFrac(periodVal(pt[t].returns, x[0]), p); return '<td class="'+cls(v)+'">'+fmtPct(v)+"</td>"; }).join("") + "</tr>";
+    });
+    html += "</tbody>";
+    document.getElementById("perfTable").innerHTML = html;
+
+    // teams
+    var th = "";
+    TEAMS.forEach(function(t){
+      var tt = totals[t];
+      th += '<section class="panel"><div class="team-head"><h2>'+esc(TEAM_NAMES[t])+'</h2><div class="team-stats">' +
+        '<span>Cash <b>'+fmtUSD(tt.cash)+'</b></span>' +
+        '<span>Value (committed) <b>'+fmtUSD(tt.committedValue)+'</b></span>' +
+        '<span>Value (current) <b>'+fmtUSD(tt.liveTotal)+'</b></span>' +
+        '</div></div>';
+      if (!tt.rows.length){
+        th += '<div class="empty">No holdings — 100% cash.</div></section>';
+        return;
+      }
+      th += '<div class="scroll"><table><thead><tr><th>Ticker</th><th>Shares</th><th>Cost basis</th><th>Avg cost</th><th>Last committed</th><th>Live price</th><th>Current value</th><th>Gain/Loss $</th><th>Gain/Loss %</th></tr></thead><tbody>';
+      tt.rows.forEach(function(r){
+        var n = r.n, c = r.c;
+        var badge = c.priceSource === "live" ? '<span class="badge live" title="'+esc(state.live[n.ticker].source)+'">live</span>' :
+                    c.priceSource === "committed" ? '<span class="badge committed">committed</span>' : '';
+        th += "<tr><td><b>"+esc(n.ticker||"?")+"</b></td><td>"+fmtNum(n.shares)+"</td>" +
+          '<td title="'+esc(n.costSrc)+'">'+fmtUSD(n.costBasis)+(n.costSrc.indexOf("derived")===0?"*":"")+"</td>" +
+          "<td>"+fmtUSD(n.avgCost)+"</td><td>"+fmtUSD(n.committed)+"</td>" +
+          "<td>"+fmtUSD(c.livePrice)+badge+"</td><td>"+fmtUSD(c.value)+"</td>" +
+          '<td class="'+cls(c.gl)+'">'+fmtSignedUSD(c.gl)+'</td><td class="'+cls(c.glPct)+'">'+fmtPct(c.glPct)+"</td></tr>";
+      });
+      var tglPct = tt.glPct;
+      th += '</tbody><tfoot><tr><td>Subtotal</td><td></td><td>'+fmtUSD(tt.cost)+'</td><td></td><td></td><td></td><td>'+fmtUSD(tt.holdingsValue)+'</td>' +
+        '<td class="'+cls(tt.gl)+'">'+fmtSignedUSD(tt.gl)+'</td><td class="'+cls(tglPct)+'">'+fmtPct(tglPct)+'</td></tr>' +
+        '<tr><td>Cash</td><td colspan="5"></td><td>'+fmtUSD(tt.cash)+'</td><td colspan="2"></td></tr>' +
+        '<tr><td>Team total</td><td colspan="5"></td><td>'+fmtUSD(tt.liveTotal)+'</td><td colspan="2"></td></tr></tfoot></table></div>' +
+        ((tt.derived || tt.unpriced || tt.noCost) ? '<div class="muted small" style="margin-top:6px">' +
+          (tt.derived ? '* cost basis derived (no cost_basis field in holdings file). ' : '') +
+          (tt.unpriced ? tt.unpriced + ' holding(s) have no committed or live price and are excluded from value totals. ' : '') +
+          (tt.noCost ? tt.noCost + ' holding(s) have no cost data and are excluded from gain/loss totals.' : '') + '</div>' : '') + '</section>';
+    });
+    document.getElementById("teams").innerHTML = th;
+  }
+
+  // ---------- main load ----------
+  function loadAll(){
+    state.errors = [];
+    var jobs = [loadJSON("snapshot_latest.json"), loadJSON("performance.json")];
+    TEAMS.forEach(function(t){
+      jobs.push(loadJSON("teams/"+t+"/holdings.json"), loadJSON("teams/"+t+"/cash.json"), loadJSON("teams/"+t+"/value.json"));
+    });
+    return Promise.all(jobs).then(function(res){
+      state.snapshot = res[0]; state.performance = res[1];
+      var snapTeams = (res[0] && res[0].teams) || {};
+      TEAMS.forEach(function(t,i){
+        var h = res[2+i*3], c = res[3+i*3], v = res[4+i*3];
+        var st = snapTeams[t] || {};
+        var cash = c && typeof c === "object" ? pick(c,["cash"]) : num(c);
+        if (cash === null) cash = num(st.cash);
+        var value = v && typeof v === "object" ? pick(v,["value"]) : num(v);
+        if (value === null) value = num(st.value);
+        state.teams[t] = { holdings: holdingsArray(h).map(normalizeHolding), cash:cash, value:value };
+      });
+      render();
+    });
+  }
+  var timer = null;
+  function fullRefresh(){
+    var btn = document.getElementById("refreshBtn"); btn.disabled = true;
+    return loadAll().then(refreshPrices).catch(function(e){ state.errors.push(String(e && e.message || e)); render(); })
+      .finally(function(){ btn.disabled = false; });
+  }
+  function schedule(){
+    if (timer) clearInterval(timer);
+    if (document.getElementById("autoChk").checked) timer = setInterval(function(){ if (!document.hidden) fullRefresh(); }, AUTO_MS);
+  }
+  // expose pure helpers for testing
+  window.__delta = { normalizeHolding:normalizeHolding, holdingsArray:holdingsArray, computeRow:computeRow, periodVal:periodVal, parseYahoo:parseYahoo, state:state, loadAll:loadAll, refreshPrices:refreshPrices };
+  document.addEventListener("DOMContentLoaded", function(){
+    document.getElementById("refreshBtn").addEventListener("click", fullRefresh);
+    document.getElementById("autoChk").addEventListener("change", schedule);
+    fullRefresh(); schedule();
+  });
+})();
+</script>
+</body>
+</html>
