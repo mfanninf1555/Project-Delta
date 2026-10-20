@@ -73,3 +73,7 @@ Amendment 6 — Automation ownership
 Amendment 7 — 20-year isolation and amendments
 - The four $250 k sleeves remain permanently isolated. No reallocation between teams unless the owner issues a written amendment.
 - Any protocol change must be added as a new dated amendment in PROTOCOL.md, committed by the Project Overseer, and referenced in the next snapshot.
+
+Amendment 8 — Committed price marks and dashboard commit exception (adopted 2026-10-20, approved by owner Matt)
+- (a) Committed price marks: on each scheduled run (09:00 / 12:30 / 16:30 ET) the Project Overseer writes prices.json at the repo root, using the Amendment 1 price rule for that slot, covering every held ticker across all teams plus the S&P 500 total-return (^SP500TR) level, and commits it with the snapshot. prices.json is display-only for the dashboard and never feeds the ledger.
+- (b) Dashboard exception to Amendment 6: the Project Delta Engineer bot may commit directly to main changes limited to dashboard-only files (index.html, DASHBOARD.md, .nojekyll, and other static assets used only by the dashboard). It may not modify the ledger, snapshots, performance, team files, prices.json, scripts, CONVENTIONS.md or PROTOCOL.md. The Project Overseer remains the only committer for everything else.

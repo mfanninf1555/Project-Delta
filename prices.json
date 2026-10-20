@@ -1,0 +1,9 @@
+{
+  "as_of": "2026-10-20T18:01:00Z",
+  "source": "Yahoo Finance latest regular-session quote",
+  "prices": {},
+  "sp500_total_return": {
+    "level": 17328.400390625,
+    "as_of": "2026-10-20T18:01:00Z"
+  }
+}

@@ -122,8 +122,28 @@ To grant an override, append one line to `overrides.jsonl` and commit it. The ov
 - `teams/teamN/proposals.json`: `[]`. It is reset after processing, and only deferred items are kept.
 
 ## Snapshot (`snapshot_latest.json`, plus frozen `snapshots/YYYY-MM-DD_HHMM.json`)
-- Fields: `as_of` (UTC), `run_id`, `run_slot`, `session_date`, `early_close`, `inception_date`, `total_value`, `cash`, `unallocated_cash`, `positions[]` (each tagged with its team), `teams{teamN:{cash, holdings_value, value, names}}`, `sp500_price` and its source (`^GSPC`), `sp500_total_return` and its source (`^SP500TR` level), `amendments_referenced` (parsed from the PROTOCOL.md amendment headings), `reconciliation`, `ledger_lines`.
+- Fields: `as_of` (UTC), `run_id`, `run_slot`, `session_date`, `early_close`, `inception_date`, `total_value`, `cash`, `unallocated_cash`, `positions[]` (each tagged with its team), `teams{teamN:{cash, holdings_value, value, names}}`, `sp500_price` and its source (`^GSPC`), `sp500_total_return` and its source (`^SP500TR` level), `amendments_referenced` (parsed from the PROTOCOL.md amendment headings), `amendment_notes` (for example `Amendment 8 adopted 2026-10-20` for amendments not in the previous frozen snapshot), `reconciliation`, `ledger_lines`.
 - `cash` is team cash plus unallocated cash. Frozen snapshots are never overwritten.
+
+## Price marks (`prices.json`, Amendment 8(a))
+- The Project Overseer writes this file on every scheduled run and commits it together with the snapshot. It is **display-only** for the dashboard and never feeds the ledger.
+- Prices follow the Amendment 1 rule for the slot. The file covers every held ticker across all teams (the union, using Yahoo symbols such as `BRK-B`) and the `^SP500TR` level. A dry-run prints a preview in `prices_json_preview`.
+```json
+{"as_of": "2026-10-20T20:00:00Z",
+ "source": "Yahoo Finance official close",
+ "prices": {"MSFT": {"price": 531.78, "as_of": "2026-10-20T20:00:00Z"}},
+ "sp500_total_return": {"level": 17324.24, "as_of": "2026-10-20T20:00:00Z"}}
+```
+- `source` is one of `Yahoo Finance previous official close` (09:00), `Yahoo Finance latest regular-session quote` (12:30) or `Yahoo Finance official close` (16:30).
+- Every `as_of` is the **actual price bar time** in UTC, never the run time or the scheduled time, and never in the future:
+  - official closes: the session close time (16:00 ET, or the early close);
+  - 12:30 quotes: the start time of the last 1-minute regular-session bar.
+- The top-level `as_of` is the latest bar time in the file. `prices` is `{}` when nothing is held.
+
+## Dashboard commits (Amendment 8(b))
+- The Project Delta Engineer bot may commit dashboard-only files directly to `main`: `index.html`, `DASHBOARD.md`, `.nojekyll`, and other static assets used only by the dashboard.
+- Everything else is committed only by the Project Overseer: the ledger, snapshots, performance, team files, `prices.json`, scripts, `CONVENTIONS.md` and `PROTOCOL.md`.
+- The run script commits with `git add -A` after `pull --rebase`, so it picks up only its own outputs.
 
 ## Reconciliation (Amendment 3)
 On every run:

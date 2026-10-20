@@ -5,7 +5,7 @@ Usage:
   scripts/run.py --slot {0900|1230|1630} [--dry-run] [--now ISO] [--repo DIR] [--inbox DIR] [--no-push]
 
 See CONVENTIONS.md for schemas, interpretations and the proposal handoff process.
-Implements PROTOCOL.md + Amendments 1-7. Never edits PROTOCOL.md.
+Implements PROTOCOL.md + Amendments 1-8. Never edits PROTOCOL.md.
 """
 from __future__ import annotations
 
@@ -91,7 +91,9 @@ def session_info(day: dt.date):
     close_et = row["market_close"].tz_convert(ET).to_pydatetime()
     open_et = row["market_open"].tz_convert(ET).to_pydatetime()
     prev = days[days.index(day) - 1] if days.index(day) > 0 else None
-    return {"date": day, "open": open_et, "close": close_et, "prev_session": prev,
+    prev_close = (sched.loc[sched.index[days.index(prev)]]["market_close"].tz_convert(ET).to_pydatetime()
+                  if prev else None)
+    return {"date": day, "open": open_et, "close": close_et, "prev_session": prev, "prev_close": prev_close,
             "early_close": (close_et.hour, close_et.minute) != (16, 0)}
 
 
@@ -156,6 +158,7 @@ class Pricer:
         self.indicative = indicative
         self.wait_close_min = wait_close_min
         self.cache = {}
+        self.bar_time = {}  # ticker -> actual price bar time (aware datetime)
         self.cache_qt = {}
         self.tickers = {}
         self.yf_down = False
@@ -216,6 +219,7 @@ class Pricer:
         d = self._daily(t, self.sess["date"])
         if prev not in d:
             raise RuntimeError(f"{t}: no official close for previous session {prev}")
+        self.bar_time[t] = self.sess["prev_close"]
         return d[prev], self._src(t, f"official close (daily Close, session {prev})", f"{prev} close")
 
     def _p1630(self, t):  # official close of today (early close aware)
@@ -224,6 +228,7 @@ class Pricer:
         while True:
             d = self._daily(t, day)
             if day in d:
+                self.bar_time[t] = self.sess["close"]
                 return d[day], self._src(t, f"official close (daily Close, session {day}"
                                          + (", early close" if self.sess["early_close"] else "") + ")",
                                          f"{day} close {self.sess['close'].strftime('%H:%M')} ET")
@@ -240,6 +245,7 @@ class Pricer:
         if len(h) == 0:
             raise RuntimeError(f"{t}: no regular-session 1m quote for {day} up to {self.now}")
         ts = h.index[-1].tz_convert(ET)
+        self.bar_time[t] = ts.to_pydatetime()  # bar start time: never later than the decision time
         return float(h["Close"].iloc[-1]), self._src(t, "latest regular-session quote (1m bar close)",
                                                      ts.strftime("%Y-%m-%dT%H:%M%z") + " ET")
 
@@ -494,6 +500,49 @@ def compute_performance(eod, current, inception_date, bench_baseline):
                     "benchmark": round(annualize(bb, days), 8) if (bb is not None and days >= 365) else None,
                     "note": "annualized only once >= 365 calendar days of history"}
     return res
+
+
+# ---------------------------------------------------------------- Amendment 8 helpers
+PRICE_SOURCE_LABEL = {"0900": "previous official close", "1230": "latest regular-session quote", "1630": "official close"}
+
+
+def build_prices_json(pricer, slot, now, held):
+    """Amendment 8(a) prices.json: Amendment-1 marks for every held ticker (union across teams) + ^SP500TR.
+    Every as_of is the actual price bar time (UTC Z), clamped so it is never later than now."""
+    def bt(t):
+        b = pricer.bar_time.get(t)
+        if b is None:
+            return None
+        return zulu(min(b, now))
+    label = "latest regular-session quote" if pricer.indicative else PRICE_SOURCE_LABEL[slot]
+    prices, times = {}, []
+    for tk in held:
+        pr, _ = pricer.price(tk)
+        prices[tk] = {"price": pr, "as_of": bt(tk)}
+        if bt(tk):
+            times.append(bt(tk))
+    sp = None
+    try:
+        lvl, _ = pricer.price(BENCH)
+        sp = {"level": lvl, "as_of": bt(BENCH)}
+        if bt(BENCH):
+            times.append(bt(BENCH))
+    except Exception as e:
+        log(f"WARNING prices.json: ^SP500TR unavailable: {e}")
+    return {"as_of": max(times) if times else None, "source": f"Yahoo Finance {label}",
+            "prices": prices, "sp500_total_return": sp}
+
+
+def amendment_notes(repo, amends, adopted):
+    """Notes for amendments not referenced by the most recent frozen snapshot (Amendment 7 referencing)."""
+    prev = set(range(1, 8))
+    arch = sorted(glob.glob(os.path.join(repo, "snapshots", "*.json")))
+    if arch:
+        try:
+            prev = set(rj(arch[-1]).get("amendments_referenced") or [])
+        except Exception:
+            pass
+    return [f"Amendment {n} adopted {adopted.get(n, 'date n/a')}" for n in amends if n not in prev]
 
 
 # ---------------------------------------------------------------- git
@@ -949,7 +998,9 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
     }
 
     # ---- snapshot
-    amends = sorted({int(m) for m in re.findall(r"Amendment\s+(\d+)\s+[—-]", open(os.path.join(repo, "PROTOCOL.md")).read())})
+    protocol_text = open(os.path.join(repo, "PROTOCOL.md")).read()
+    adopted = {int(n): d for n, d in re.findall(r"^#*\s*Amendment\s+(\d+)\b[^\n]*?adopted (\d{4}-\d{2}-\d{2})", protocol_text, re.M)}
+    amends = sorted({int(m) for m in re.findall(r"^#*\s*Amendment\s+(\d+)\b", protocol_text, re.M)})
     snap = {
         "as_of": ts_now, "run_id": run_id, "run_slot": slot, "session_date": sdate.isoformat(),
         "early_close": sess["early_close"], "inception_date": inception_date,
@@ -960,6 +1011,7 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
         "sp500_price": bench[SPX][0], "sp500_price_source": bench[SPX][1],
         "sp500_total_return": bench[BENCH][0], "sp500_total_return_source": bench[BENCH][1],
         "amendments_referenced": amends,
+        "amendment_notes": amendment_notes(repo, amends, adopted),
         "reconciliation": summary["reconciliation"],
         "ledger_lines": len(all_lines),
     }
@@ -975,8 +1027,12 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
                                                        "decision_price", "amount")} for d in decisions])
     log(f"approved={len(approved)} rejected={len(rejected)} deferred={len(deferred)} new_lines={len(new_lines)}")
 
+    prices_doc = build_prices_json(pricer, slot, now, sorted({tk for t in TEAMS for tk in st[t]["pos"]}))
+    summary["prices_json_tickers"] = len(prices_doc["prices"])
+
     if args.dry_run:
         summary["would_append_ledger_lines"] = new_lines
+        summary["prices_json_preview"] = prices_doc
         log("dry run: no files written, nothing committed, inbox untouched")
         return 0
 
@@ -1003,6 +1059,7 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
         raise RuntimeError(f"frozen snapshot {arch} already exists")
     wj(arch, snap)
     wj(os.path.join(repo, "performance.json"), perf)
+    wj(os.path.join(repo, "prices.json"), prices_doc)  # Amendment 8(a): display-only, never feeds the ledger
     os.makedirs(hist_dir, exist_ok=True)
     with open(os.path.join(hist_dir, "runs.jsonl"), "a") as f:
         f.write(json.dumps({"run_id": run_id, "as_of": ts_now, "slot": slot, "values": vals,
