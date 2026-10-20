@@ -93,7 +93,7 @@ The headline value card counts every price source actually used in the total, e.
 
 ## Optional `prices.json` (committed marks)
 
-Yahoo sends no CORS headers, and public proxies are unreliable, so the dependable way to show fresher prices is a committed file at the repo root:
+Yahoo sends no CORS headers, and public proxies are unreliable, so the dependable way to show fresher prices is a committed file at the repo root. Since Amendment 8 the Project Overseer writes it (see below):
 
 ```json
 {
@@ -110,16 +110,21 @@ Yahoo sends no CORS headers, and public proxies are unreliable, so the dependabl
 - `prices.TICKER.price` is required. `prices.TICKER.as_of` is optional and defaults to the top-level `as_of`. Ticker matching ignores case. A bare number (`"KO": 62.0`) is also accepted.
 - `sp500_total_return` may be an object (`level`, optional `as_of`) or a number (uses the top-level `as_of`).
 - A `prices.json` price is used only when it is **newer** than the holding's own `last_price`. The same rule applies to the benchmark level versus `snapshot_latest.json`.
-- If `prices.json` is absent (HTTP 404, the expected state until a writer is approved), it is ignored quietly, apart from the browser's own network log line. If it is present but fails to load or parse, an error is shown, the footer says "prices.json failed to load/parse", and the last good copy from the session is used if there is one.
+- Under Amendment 8 the file should always be present. If it is ever absent (HTTP 404), it is ignored quietly, apart from the browser's own network log line. If it is present but fails to load or parse, an error is shown, the footer says "prices.json failed to load/parse", and the last good copy from the session is used if there is one.
 - Like every other file, it is read-only to the dashboard and not part of the ledger.
 
-### Proposal only: automated price commits (NOT implemented)
+### Writer: Project Overseer under Amendment 8 (implemented)
 
-> Requires Matt's approval and a protocol amendment. Under Amendment 6 the Project Overseer is the only bot that commits to `main`, so no workflow or scheduled committer has been added.
+**Amendment 8** (adopted 2026-10-20 and approved by Matt; commit `0de255b`) adopted Option A from the earlier proposal:
 
-Option A, preferred: the Project Overseer writes `prices.json` in each of its three scheduled runs (09:00 / 12:30 / 16:30 ET), using the Amendment 1 price rule, and commits it with the snapshot. This needs no new committer.
+- The Project Overseer writes `prices.json` at the repo root on every scheduled run (09:00 / 12:30 / 16:30 ET), using the Amendment 1 price rule for that slot, and commits it with the snapshot.
+- The file covers every held ticker across all teams, as Yahoo symbols, plus the `^SP500TR` level. `as_of` is the actual bar time in UTC (`Z`).
+- `prices.json` is display-only and never feeds the ledger.
+- The Day-0 file is committed with an empty `prices` object and an `sp500_total_return` level. The dashboard handles that without errors: no holdings are affected, and the S&P card uses its level because it is newer than the snapshot's.
+- Option B (a GitHub Actions/cron price committer) was **not adopted**. There is no workflow in this repo.
+- Under Amendment 8(b), dashboard-only files (`index.html`, `DASHBOARD.md`, `.nojekyll`, dashboard-only static assets) may be committed directly to `main` by the Project Delta Engineer bot. Everything else, including `prices.json`, stays with the Project Overseer.
 
-Option B: a GitHub Actions workflow (e.g. a `*/15 13-21 * * 1-5` cron during NYSE hours) fetches the Yahoo chart endpoint server-side, where CORS does not apply, and commits only `prices.json`, or publishes it as a Pages artifact without committing. Because this adds a second committer or automation, it needs a new dated amendment in PROTOCOL.md first.
+**Precedence note:** the Overseer writes holdings (`last_price`, no per-holding `as_of`) and `prices.json` in the same run. Holdings therefore take the snapshot `as_of` (the run time), which is usually a little later than the `prices.json` bar time, so the holding's `last_price` normally wins the "newer" test. That is harmless, since both come from the same run. `prices.json` wins whenever it is genuinely newer, or when a holding has no `last_price`.
 
 ## Load failures and reconciliation
 
@@ -130,7 +135,10 @@ Option B: a GitHub Actions workflow (e.g. a `*/15 13-21 * * 1-5` cron during NYS
 
 ## Live quotes (best effort)
 
-- **Batched requests:** one request per refresh for up to 20 symbols, via the Yahoo spark endpoint `https://query1.finance.yahoo.com/v7/finance/spark?symbols=A,B,^SP500TR&range=1d&interval=1d` (`meta.regularMarketPrice`, `meta.regularMarketTime`). Fallback is the per-symbol chart endpoint `v8/finance/chart/SYM`; it probes one symbol first and fans out only if that works.
+- **Batched requests:** the Yahoo spark endpoint `https://query1.finance.yahoo.com/v7/finance/spark?symbols=A,B,^SP500TR&range=1d&interval=1d` (`meta.regularMarketPrice`, `meta.regularMarketTime`) takes at most 20 symbols per request; Yahoo rejects 21 or more. Symbols are sent in chunks of 20, one after another: about 89 tickers plus `^SP500TR` is 5 requests per 5-minute cycle.
+  - The first chunk is a probe. If it fails, that source is abandoned after a single request.
+  - If a later chunk fails, the quotes already fetched are kept, and the missing symbols fall back to committed prices.
+- **Per-symbol fallback:** the chart endpoint `v8/finance/chart/SYM` is used only when there are 25 symbols or fewer. It probes one symbol first and fans out only if that works. With larger portfolios it is skipped, to avoid about 90 requests per cycle.
 - **Sources:** direct, then api.allorigins.win, api.codetabs.com and corsproxy.io (which now requires an API key). The chain stops at the first method that returns quotes, and the working method is remembered in `localStorage` and tried first next time.
-- **Back-off:** if every source fails, automatic live attempts back off for 5, 10, 20, 40, then 60 minutes. Committed files still reload every 5 minutes, and **Refresh** always retries straight away.
+- **Back-off:** with about 90 symbols, a cycle where every source fails costs 4 requests (one probe per source). After any fully failed cycle, automatic live attempts back off for 5, 10, 20, 40, then 60 minutes. Committed files still reload every 5 minutes, and **Refresh** always retries straight away.
 - **Display only:** live quotes never feed the ledger. Official marks remain those committed under Amendment 1.

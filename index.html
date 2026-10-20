@@ -382,21 +382,33 @@
   }
   function chunk(a, n){ var o = []; for (var i=0;i<a.length;i+=n) o.push(a.slice(i,i+n)); return o; }
   // Try one method. Resolves to {SYM: quote} with at least one quote, or rejects.
+  var SPARK_MAX = 20;          // Yahoo spark rejects more than 20 symbols per request
+  var CHART_MAX_SYMBOLS = 25;  // per-symbol fallback only for small portfolios (avoids ~90 requests per cycle)
+  // Try one method. Resolves to {SYM: quote} with at least one quote, or rejects.
   function tryMethod(method, syms){
     var parts = method.split(":"), tr = TRANSPORTS[parts[0]], ep = parts[1];
     if (ep === "spark"){
-      return Promise.all(chunk(syms, 20).map(function(c){ return getJSON(tr(ENDPOINTS.spark(c))).then(parseSpark); }))
-        .then(function(list){ var out = Object.assign.apply(null, [{}].concat(list)); if (!Object.keys(out).length) throw new Error("no quotes"); return out; });
+      // Chunks run one after another. The first chunk is a probe: if it fails, the method fails after one
+      // request. Later chunk failures are tolerated (partial results are kept, missing symbols use committed prices).
+      var chunks = chunk(syms, SPARK_MAX), out = {};
+      return getJSON(tr(ENDPOINTS.spark(chunks[0]))).then(parseSpark).then(function(q){
+        if (!Object.keys(q).length) throw new Error("no quotes");
+        Object.assign(out, q);
+        return chunks.slice(1).reduce(function(pr, c){
+          return pr.then(function(){ return getJSON(tr(ENDPOINTS.spark(c))).then(parseSpark).then(function(q2){ Object.assign(out, q2); }, function(){}); });
+        }, Promise.resolve());
+      }).then(function(){ return out; });
     }
+    if (syms.length > CHART_MAX_SYMBOLS) return Promise.reject(new Error("too many symbols for per-symbol fallback"));
     // chart: probe with the first symbol; only fan out to the rest if the probe works.
-    var out = {};
-    return getJSON(tr(ENDPOINTS.chart(syms[0]))).then(function(j){ out[syms[0]] = parseYahoo(j); }).then(function(){
+    var outc = {};
+    return getJSON(tr(ENDPOINTS.chart(syms[0]))).then(function(j){ outc[syms[0]] = parseYahoo(j); }).then(function(){
       var rest = syms.slice(1), queue = rest.slice();
       function worker(){ if (!queue.length) return Promise.resolve(); var s = queue.shift();
-        return getJSON(tr(ENDPOINTS.chart(s))).then(function(j){ out[s] = parseYahoo(j); }, function(){}).then(worker); }
+        return getJSON(tr(ENDPOINTS.chart(s))).then(function(j){ outc[s] = parseYahoo(j); }, function(){}).then(worker); }
       var ws = []; for (var i=0;i<Math.min(3, rest.length);i++) ws.push(worker());
       return Promise.all(ws);
-    }).then(function(){ return out; });
+    }).then(function(){ return outc; });
   }
   function allTickers(){
     var set = {};
@@ -412,7 +424,8 @@
     if (!force && Date.now() < meta.backoffUntil){ renderPriceStatus(); return Promise.resolve(); }
     var syms = allTickers().concat([BENCH_SYMBOL]);
     var remembered = lsGet(LS_KEY);
-    var order = METHODS.slice(); if (remembered && order.indexOf(remembered) >= 0) order = [remembered].concat(order.filter(function(m){ return m !== remembered; }));
+    var order = METHODS.filter(function(m){ return syms.length <= CHART_MAX_SYMBOLS || m.split(":")[1] !== "chart"; });
+    if (remembered && order.indexOf(remembered) >= 0) order = [remembered].concat(order.filter(function(m){ return m !== remembered; }));
     var i = 0, used = null;
     function next(){
       if (i >= order.length) return Promise.resolve(null);
