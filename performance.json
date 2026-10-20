@@ -1,1 +1,144 @@
-{}
+{
+  "as_of": "2026-10-20T16:47:05Z",
+  "inception_date": "2026-10-20",
+  "benchmark": "S&P 500 total return (^SP500TR)",
+  "benchmark_baseline": {
+    "date": "2026-10-20",
+    "level": null,
+    "status": "pending: official 2026-10-20 close recorded by the 16:30 ET run",
+    "day0_intraday_level": 17315.7891
+  },
+  "method": "time-weighted return; null = not yet available",
+  "account": {
+    "starting_value": 1000000,
+    "current_value": 1000000,
+    "returns": {
+      "1d": null,
+      "mtd": null,
+      "qtd": null,
+      "ytd": null,
+      "1y": null,
+      "3y": null,
+      "5y": null,
+      "10y": null,
+      "since_inception": 0
+    },
+    "benchmark_returns": {
+      "1d": null,
+      "mtd": null,
+      "qtd": null,
+      "ytd": null,
+      "1y": null,
+      "3y": null,
+      "5y": null,
+      "10y": null,
+      "since_inception": 0
+    }
+  },
+  "teams": {
+    "team1": {
+      "starting_value": 250000,
+      "current_value": 250000,
+      "returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      },
+      "benchmark_returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      }
+    },
+    "team2": {
+      "starting_value": 250000,
+      "current_value": 250000,
+      "returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      },
+      "benchmark_returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      }
+    },
+    "team3": {
+      "starting_value": 250000,
+      "current_value": 250000,
+      "returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      },
+      "benchmark_returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      }
+    },
+    "team4": {
+      "starting_value": 250000,
+      "current_value": 250000,
+      "returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      },
+      "benchmark_returns": {
+        "1d": null,
+        "mtd": null,
+        "qtd": null,
+        "ytd": null,
+        "1y": null,
+        "3y": null,
+        "5y": null,
+        "10y": null,
+        "since_inception": 0
+      }
+    }
+  }
+}

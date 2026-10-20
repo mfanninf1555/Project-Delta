@@ -1,8 +1,51 @@
 {
-  "as_of": null,
+  "as_of": "2026-10-20T16:47:05Z",
+  "inception_date": "2026-10-20",
   "total_value": 1000000,
   "cash": 1000000,
+  "unallocated_cash": 0,
   "positions": [],
-  "sp500_price": null,
-  "sp500_total_return": null
+  "teams": {
+    "team1": {
+      "cash": 250000,
+      "value": 250000
+    },
+    "team2": {
+      "cash": 250000,
+      "value": 250000
+    },
+    "team3": {
+      "cash": 250000,
+      "value": 250000
+    },
+    "team4": {
+      "cash": 250000,
+      "value": 250000
+    }
+  },
+  "sp500_price": 7717.9302,
+  "sp500_price_source": {
+    "level": 7717.9302,
+    "source": "Yahoo Finance ^GSPC 1m regular-session bar",
+    "bar_timestamp": "2026-10-20T16:47:00Z",
+    "url": "https://finance.yahoo.com/quote/%5EGSPC/",
+    "note": "intraday level at Day-0 init; official inception baseline = 2026-10-20 official close, recorded by the 16:30 ET run"
+  },
+  "sp500_total_return": 17315.7891,
+  "sp500_total_return_source": {
+    "level": 17315.7891,
+    "source": "Yahoo Finance ^SP500TR 1m regular-session bar",
+    "bar_timestamp": "2026-10-20T16:47:00Z",
+    "url": "https://finance.yahoo.com/quote/%5ESP500TR/",
+    "note": "intraday level at Day-0 init; official inception baseline = 2026-10-20 official close, recorded by the 16:30 ET run"
+  },
+  "amendments_referenced": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ]
 }
