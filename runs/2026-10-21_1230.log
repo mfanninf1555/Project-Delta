@@ -84,3 +84,5 @@ SUMMARY {
   "log": "/home/box/project-delta/repo/runs/2026-10-21_1230.log",
   "error": "push failed: /usr/bin/gh auth git-credential get: 1: /usr/bin/gh: not found\nfatal: could not read Username for 'https://github.com': No such device or address\n"
 }
+
+[2026-10-21T16:35:14Z] RECOVERY (Overseer): push failed only because the git credential helper pointed at /usr/bin/gh, which moved to /usr/local/bin/gh. Ran `gh auth setup-git`; commit d3cc452 pushed unchanged. Ledger, reconciliation and fills as booked above; run status effectively ok.
