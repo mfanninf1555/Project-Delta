@@ -1,0 +1,75 @@
+[2026-10-21T16:33:53Z] pre-run integrity OK: ledger lines=113, team files match replay
+[2026-10-21T16:34:14Z] corporate actions booked: 0
+[2026-10-21T16:34:14Z] TO_REJECTED team1 team1-20261021-SNOW: Team 1 is 8 of 8 names once the already-approved ISRG 67 sh buy fills in the 2026-10-21 1230 slot, and that buy uses ~$28.8k of the $30,705.62 cash, leaving ~$2k; a ~$29.4k SNOW buy would breach both the 8-name cap and the cash limit. Proposer asked to withdraw if Team 1 is at 8 of 8. SNOW may return only as a funded swap. (parked in inbox/rejected, not booked)
+[2026-10-21T16:34:14Z] APPROVED  team1 team1-20261021-ISRG: ok
+[2026-10-21T16:34:15Z] APPROVED  team2 team2-20261021-CB: ok
+[2026-10-21T16:34:20Z] reconcile: sum(team values)=1,006,828.86 + unallocated=0.00 vs master=1,006,828.86 diff=-0.0
+[2026-10-21T16:34:20Z] approved=2 rejected=1 deferred=0 new_lines=2
+
+SUMMARY {
+  "run_id": "2026-10-21_1230",
+  "slot": "1230",
+  "dry_run": false,
+  "now_et": "2026-10-21T12:33:53.122605-04:00",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 1006828.86,
+    "unallocated_cash": 0.0,
+    "master_total": 1006828.86,
+    "diff": -0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-10-21",
+  "approved": 2,
+  "rejected": 1,
+  "deferred": 0,
+  "corporate_actions": 0,
+  "new_ledger_lines": 2,
+  "total_value": 1006828.86,
+  "team_values": {
+    "team1": 253549.36,
+    "team2": 250634.55,
+    "team3": 250425.32,
+    "team4": 252219.63
+  },
+  "team_cash": {
+    "team1": 1995.11,
+    "team2": 14638.12,
+    "team3": 11266.2,
+    "team4": 78453.3
+  },
+  "sp500tr": 17388.2890625,
+  "decisions": [
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261021-SNOW",
+      "status": "to_rejected",
+      "reasons": [
+        "Team 1 is 8 of 8 names once the already-approved ISRG 67 sh buy fills in the 2026-10-21 1230 slot, and that buy uses ~$28.8k of the $30,705.62 cash, leaving ~$2k; a ~$29.4k SNOW buy would breach both the 8-name cap and the cash limit. Proposer asked to withdraw if Team 1 is at 8 of 8. SNOW may return only as a funded swap."
+      ],
+      "shares": null,
+      "decision_price": null,
+      "amount": null
+    },
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261021-ISRG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 67.0,
+      "decision_price": 428.5150146484375,
+      "amount": 28710.51
+    },
+    {
+      "team": "team2",
+      "proposal_id": "team2-20261021-CB",
+      "status": "approved",
+      "reasons": [],
+      "shares": 56.0,
+      "decision_price": 356.43499755859375,
+      "amount": 19960.36
+    }
+  ],
+  "prices_json_tickers": 98
+}
