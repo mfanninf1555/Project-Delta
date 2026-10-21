@@ -5,6 +5,15 @@
 [2026-10-21T16:34:15Z] APPROVED  team2 team2-20261021-CB: ok
 [2026-10-21T16:34:20Z] reconcile: sum(team values)=1,006,828.86 + unallocated=0.00 vs master=1,006,828.86 diff=-0.0
 [2026-10-21T16:34:20Z] approved=2 rejected=1 deferred=0 new_lines=2
+[2026-10-21T16:34:36Z] ERROR: Traceback (most recent call last):
+  File "/home/box/project-delta/repo/scripts/run.py", line 600, in main
+    rc = run(args, repo, inbox, slot, now, sess, run_id, summary)
+  File "/home/box/project-delta/repo/scripts/run.py", line 1089, in run
+    raise RuntimeError(f"push failed: {r.stderr}")
+RuntimeError: push failed: /usr/bin/gh auth git-credential get: 1: /usr/bin/gh: not found
+fatal: could not read Username for 'https://github.com': No such device or address
+
+
 
 SUMMARY {
   "run_id": "2026-10-21_1230",
@@ -19,7 +28,7 @@ SUMMARY {
     "diff": -0.0,
     "ok": true
   },
-  "status": "ok",
+  "status": "error",
   "session_date": "2026-10-21",
   "approved": 2,
   "rejected": 1,
@@ -71,5 +80,7 @@ SUMMARY {
       "amount": 19960.36
     }
   ],
-  "prices_json_tickers": 98
+  "prices_json_tickers": 98,
+  "log": "/home/box/project-delta/repo/runs/2026-10-21_1230.log",
+  "error": "push failed: /usr/bin/gh auth git-credential get: 1: /usr/bin/gh: not found\nfatal: could not read Username for 'https://github.com': No such device or address\n"
 }
