@@ -1,6 +1,6 @@
 {
   "as_of": "2026-10-21T20:00:00Z",
-  "source": "Yahoo Finance official close",
+  "source": "Yahoo Finance previous official close",
   "prices": {
     "ALL": {
       "price": 251.0399932861328,
