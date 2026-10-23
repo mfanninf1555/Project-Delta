@@ -1,6 +1,6 @@
 {
   "as_of": "2026-10-22T20:00:00Z",
-  "source": "Yahoo Finance official close",
+  "source": "Yahoo Finance previous official close",
   "prices": {
     "ALL": {
       "price": 259.1000061035156,
@@ -203,7 +203,7 @@
       "as_of": "2026-10-22T20:00:00Z"
     },
     "MELI": {
-      "price": 1824.9549560546875,
+      "price": 1824.9599609375,
       "as_of": "2026-10-22T20:00:00Z"
     },
     "META": {
