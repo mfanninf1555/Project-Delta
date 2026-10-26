@@ -1,0 +1,43 @@
+[2026-10-26T20:36:34Z] pre-run integrity OK: ledger lines=117, team files match replay
+[2026-10-26T20:36:34Z] corporate actions booked: 0
+[2026-10-26T20:36:34Z] reconcile: sum(team values)=994,386.66 + unallocated=0.00 vs master=994,386.65 diff=0.0
+[2026-10-26T20:36:34Z] approved=0 rejected=0 deferred=0 new_lines=0
+
+SUMMARY {
+  "run_id": "2026-10-26_1630",
+  "slot": "1630",
+  "dry_run": false,
+  "now_et": "2026-10-26T16:35:49.366297-04:00",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 994386.66,
+    "unallocated_cash": 0.0,
+    "master_total": 994386.65,
+    "diff": 0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-10-26",
+  "approved": 0,
+  "rejected": 0,
+  "deferred": 0,
+  "corporate_actions": 0,
+  "new_ledger_lines": 0,
+  "total_value": 994386.66,
+  "team_values": {
+    "team1": 244876.51,
+    "team2": 252632.0,
+    "team3": 247384.56,
+    "team4": 249493.59
+  },
+  "team_cash": {
+    "team1": 1995.11,
+    "team2": 14779.69,
+    "team3": 11309.45,
+    "team4": 78453.3
+  },
+  "sp500tr": 17226.599609375,
+  "decisions": [],
+  "prices_json_tickers": 98,
+  "log": "/tmp/project-delta/runs/2026-10-26_1630.log"
+}
