@@ -6,7 +6,7 @@
     "avg_cost": 334.37,
     "last_price": 321.67999267578125,
     "market_value": 16727.36,
-    "price_source": "Yahoo Finance AVGO official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/AVGO/history/)",
+    "price_source": "Yahoo Finance AVGO official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/AVGO/history/)",
     "weight": 0.067844
   },
   {
@@ -16,7 +16,7 @@
     "avg_cost": 258.84,
     "last_price": 253.4499969482422,
     "market_value": 14446.65,
-    "price_source": "Yahoo Finance CEG official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/CEG/history/)",
+    "price_source": "Yahoo Finance CEG official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/CEG/history/)",
     "weight": 0.058594
   },
   {
@@ -26,7 +26,7 @@
     "avg_cost": 81.48,
     "last_price": 79.12999725341797,
     "market_value": 19386.85,
-    "price_source": "Yahoo Finance GLDM official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/GLDM/history/)",
+    "price_source": "Yahoo Finance GLDM official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/GLDM/history/)",
     "weight": 0.07863
   },
   {
@@ -36,7 +36,7 @@
     "avg_cost": 534.0,
     "last_price": 551.4400024414062,
     "market_value": 20403.28,
-    "price_source": "Yahoo Finance NOC official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/NOC/history/)",
+    "price_source": "Yahoo Finance NOC official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/NOC/history/)",
     "weight": 0.082753
   },
   {
@@ -46,7 +46,7 @@
     "avg_cost": 216.47,
     "last_price": 210.9600067138672,
     "market_value": 19408.32,
-    "price_source": "Yahoo Finance NVDA official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/NVDA/history/)",
+    "price_source": "Yahoo Finance NVDA official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/NVDA/history/)",
     "weight": 0.078718
   },
   {
@@ -56,7 +56,7 @@
     "avg_cost": 193.34,
     "last_price": 191.00999450683594,
     "market_value": 29606.55,
-    "price_source": "Yahoo Finance RTX official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/RTX/history/)",
+    "price_source": "Yahoo Finance RTX official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/RTX/history/)",
     "weight": 0.12008
   },
   {
@@ -66,7 +66,7 @@
     "avg_cost": 203.56,
     "last_price": 194.32000732421875,
     "market_value": 11853.52,
-    "price_source": "Yahoo Finance VRT official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/VRT/history/)",
+    "price_source": "Yahoo Finance VRT official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/VRT/history/)",
     "weight": 0.048076
   },
   {
@@ -76,7 +76,7 @@
     "avg_cost": 150.32,
     "last_price": 140.16000366210938,
     "market_value": 16258.56,
-    "price_source": "Yahoo Finance VST official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/VST/history/)",
+    "price_source": "Yahoo Finance VST official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/VST/history/)",
     "weight": 0.065943
   },
   {
@@ -86,7 +86,7 @@
     "avg_cost": 55.72,
     "last_price": 55.900001525878906,
     "market_value": 20012.2,
-    "price_source": "Yahoo Finance XLF official close (daily Close, session 2026-10-23) @ 2026-10-23 close 16:00 ET (https://finance.yahoo.com/quote/XLF/history/)",
+    "price_source": "Yahoo Finance XLF official close (daily Close, session 2026-10-23) @ 2026-10-23 close (https://finance.yahoo.com/quote/XLF/history/)",
     "weight": 0.081167
   }
 ]
