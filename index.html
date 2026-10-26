@@ -62,22 +62,32 @@
   .team-warn{background:rgba(210,153,34,.1);border:1px solid var(--warn);border-radius:6px;padding:8px;margin-bottom:8px;font-size:13px}
   footer{color:var(--muted);font-size:12px;margin:24px 0 8px}
   a{color:var(--accent)}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto}
+  .tabs a{padding:8px 14px;color:var(--muted);text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap;font-weight:600}
+  .tabs a:hover{color:var(--text)}
+  .tabs a[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+  .tab-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px;font-size:13px}
+  .tab-controls select{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font:inherit}
+  td.note{max-width:320px;white-space:normal;text-align:left}
+  td.note details summary{cursor:pointer;list-style:none}
+  td.note details summary::-webkit-details-marker{display:none}
+  td.note details[open] summary{display:none}
   /* Narrow screens: holdings rows become stacked cards so G/L is visible without sideways scrolling */
   @media (max-width:700px){
     .wrap{padding:10px}
     .card .value{font-size:1.15rem}
     th,td{padding:5px 7px}
-    table.holdings thead{display:none}
-    table.holdings, table.holdings tbody, table.holdings tfoot, table.holdings tr, table.holdings td{display:block;width:100%}
-    table.holdings tr{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;padding:6px 8px;background:var(--panel2)}
-    table.holdings td{display:flex;justify-content:space-between;gap:10px;border:0;padding:2px 0;white-space:normal;text-align:right}
-    table.holdings td::before{content:attr(data-label);color:var(--muted);text-align:left;font-weight:400}
-    table.holdings td.tk{font-size:15px;border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:2px}
-    table.holdings td.tk::before{content:""}
-    table.holdings td.gl{font-weight:600}
-    table.holdings td.blank{display:none}
-    table.holdings tfoot tr:first-child td{border-top:0}
-    table.holdings .asof{display:inline;margin-left:4px}
+    table.stack thead{display:none}
+    table.stack, table.stack tbody, table.stack tfoot, table.stack tr, table.stack td{display:block;width:100%}
+    table.stack tr{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;padding:6px 8px;background:var(--panel2)}
+    table.stack td{display:flex;justify-content:space-between;gap:10px;border:0;padding:2px 0;white-space:normal;text-align:right}
+    table.stack td::before{content:attr(data-label);color:var(--muted);text-align:left;font-weight:400}
+    table.stack td.tk{font-size:15px;border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:2px}
+    table.stack td.tk::before{content:""}
+    table.stack td.gl{font-weight:600}
+    table.stack td.blank{display:none}
+    table.stack tfoot tr:first-child td{border-top:0}
+    table.stack .asof{display:inline;margin-left:4px}
   }
 </style>
 </head>
@@ -99,6 +109,13 @@
 
   <div class="muted small" id="meta" style="margin-bottom:12px">Loading&hellip;</div>
 
+  <nav class="tabs" role="tablist">
+    <a href="#overview" role="tab" id="tabbtn-overview" aria-selected="true">Overview</a>
+    <a href="#realized" role="tab" id="tabbtn-realized" aria-selected="false">Realized Positions</a>
+    <a href="#dividends" role="tab" id="tabbtn-dividends" aria-selected="false">Dividends</a>
+  </nav>
+
+  <div id="tab-overview" role="tabpanel">
   <div class="cards" id="summaryCards"></div>
 
   <section class="panel">
@@ -113,11 +130,38 @@
   </section>
 
   <div id="teams"></div>
+  </div>
+
+  <div id="tab-realized" role="tabpanel" hidden>
+    <section class="panel">
+      <h2>Realized Positions (sales)</h2>
+      <div class="muted small" style="margin-bottom:8px">From ledger.jsonl lines with action SELL. Realized G/L = proceeds (cash_delta) &minus; cost basis removed (|cost_basis_delta|, the pro-rata average cost of the shares sold). Dates in ET.</div>
+      <div class="tab-controls">
+        <label>Team <select id="realizedTeam"><option value="">All teams</option><option value="team1">Team 1</option><option value="team2">Team 2</option><option value="team3">Team 3</option><option value="team4">Team 4</option></select></label>
+        <label>Ticker <input type="search" id="realizedTicker" placeholder="e.g. AMZN" size="10" autocomplete="off" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font:inherit"></label>
+        <button type="button" id="realizedOrder">Order</button>
+      </div>
+      <div id="realizedBody"></div>
+    </section>
+  </div>
+
+  <div id="tab-dividends" role="tabpanel" hidden>
+    <section class="panel">
+      <h2>Dividends</h2>
+      <div class="muted small" style="margin-bottom:8px">From ledger.jsonl lines with action DIVIDEND. Booked to team cash on the ex-date (Amendment 2). Dates in ET.</div>
+      <div class="tab-controls">
+        <label>Team <select id="divTeam"><option value="">All teams</option><option value="team1">Team 1</option><option value="team2">Team 2</option><option value="team3">Team 3</option><option value="team4">Team 4</option></select></label>
+        <label>Ticker <input type="search" id="divTicker" placeholder="e.g. PG" size="10" autocomplete="off" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:5px 8px;font:inherit"></label>
+        <button type="button" id="divOrder">Order</button>
+      </div>
+      <div id="divBody"></div>
+    </section>
+  </div>
 
   <footer>
     <div id="priceStatus">Live prices: not yet fetched.</div>
     <div id="committedStatus"></div>
-    <div>Data comes from the JSON files committed to this repository (snapshot_latest.json, performance.json, optional prices.json, teams/team1&ndash;4). Live quotes are best-effort and display-only: your browser asks Yahoo Finance directly or through a public CORS proxy, and a live quote older than the staleness limit is dropped. Live values never feed the ledger. Price order: live (fresh) &rarr; committed (newest of holdings last_price / prices.json) &rarr; cost basis (flagged).</div>
+    <div>Data comes from the JSON files committed to this repository (snapshot_latest.json, performance.json, prices.json, teams/team1&ndash;4, ledger.jsonl). Live quotes are best-effort and display-only: your browser asks Yahoo Finance directly or through a public CORS proxy, and a live quote older than the staleness limit is dropped. Live values never feed the ledger. Price order: live (fresh) &rarr; committed (newest of holdings last_price / prices.json) &rarr; cost basis (flagged).</div>
     <div>Note: GitHub Pages caches files for up to 10 minutes (max-age=600), so a new commit can take up to ~10 minutes to appear here.</div>
   </footer>
 </div>
@@ -199,12 +243,16 @@
     return quoteTime == null || quoteTime > (comm.effAsOf || 0);
   }
   var DASH = "—";
-  function fmtUSD(v, dp){ if (!isNum(v)) return DASH; dp = dp==null?2:dp; return (v<0?"-":"") + "$" + Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
+  function fmtUSD(v, dp){ if (!isNum(v)) return DASH; dp = dp==null?2:dp; if (Math.abs(v) < 0.5*Math.pow(10,-dp)) v = 0; return (v<0?"-":"") + "$" + Math.abs(v).toLocaleString("en-US",{minimumFractionDigits:dp,maximumFractionDigits:dp}); }
   function fmtNum(v, dp){ if (!isNum(v)) return DASH; return v.toLocaleString("en-US",{maximumFractionDigits:dp==null?4:dp}); }
   function fmtLevel(v){ if (!isNum(v)) return DASH; return v.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
-  function fmtPct(v){ if (!isNum(v)) return DASH; return (v>0?"+":"") + (v*100).toFixed(2) + "%"; }
-  function fmtSignedUSD(v){ if (!isNum(v)) return DASH; return (v>0?"+":"") + fmtUSD(v); }
-  function cls(v){ return !isNum(v) || Math.abs(v) < 1e-12 ? "" : (v>0?"pos":"neg"); }
+  // Anything that rounds to zero at the displayed precision is shown as an unsigned, neutral zero.
+  function zeroUSD(v){ return Math.abs(v) < 0.005; }
+  function zeroPct(v){ return Math.abs(v*100) < 0.005; }
+  function fmtPct(v){ if (!isNum(v)) return DASH; if (zeroPct(v)) return "0.00%"; return (v>0?"+":"") + (v*100).toFixed(2) + "%"; }
+  function fmtSignedUSD(v){ if (!isNum(v)) return DASH; if (zeroUSD(v)) return "$0.00"; return (v>0?"+":"") + fmtUSD(v); }
+  function cls(v){ return !isNum(v) || zeroUSD(v) ? "" : (v>0?"pos":"neg"); }        // dollar amounts
+  function pcls(v){ return !isNum(v) || zeroPct(v) ? "" : (v>0?"pos":"neg"); }       // fractions shown as %
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
   // All displayed times are pinned to America/New_York and labelled ET.
   function fmtET(ms, timeOnly){
@@ -227,13 +275,13 @@
   // Relative to the page's own URL, so it works from any static host or subpath.
   function siteUrl(path){ var u = new URL(path, document.baseURI); u.searchParams.set("v", Date.now()); return u.href; }
   // Resolves to {ok, data, status:"ok"|"missing"|"error", msg}. Never rejects.
-  function loadJSON(path){
+  function loadJSON(path, parse){
     return fetchWithTimeout(siteUrl(path), FETCH_TIMEOUT).then(function(r){
       if (r.status === 404) return {ok:false, status:"missing", msg:"file not found (HTTP 404)"};
       if (!r.ok) return {ok:false, status:"error", msg:"HTTP " + r.status};
       return r.text().then(function(txt){
         if (!txt || !txt.trim()) return {ok:false, status:"error", msg:"file is empty"};
-        try { return {ok:true, status:"ok", data:JSON.parse(txt)}; }
+        try { return {ok:true, status:"ok", data:(parse || JSON.parse)(txt)}; }
         catch(e){ return {ok:false, status:"error", msg:"invalid JSON (" + (e && e.message || e) + ")"}; }
       });
     }).catch(function(e){ return {ok:false, status:"error", msg:"fetch failed (" + (e && e.name === "AbortError" ? "timeout" : (e && e.message || e)) + ")"}; })
@@ -290,6 +338,7 @@
     return { price:price, asOf: own || toMs(p.as_of), asOfLabel: own ? "prices.json prices." + sym + ".as_of" : "prices.json as_of", source: (e && e.source) || p.source || "prices.json" };
   }
   // Committed price = newest of holding.last_price and prices.json; holding as_of defaults to the snapshot time.
+  function samePrice(a, b){ return isNum(a) && isNum(b) && Math.abs(a - b) <= 1e-6 * Math.max(1, Math.abs(a)); }
   function committedPrice(n){
     var snapAsOf = toMs(state.snapshot && state.snapshot.as_of);
     var hp = n.lastPrice !== null ? { price:n.lastPrice, asOf:n.lastPriceAsOf || snapAsOf, source:"holdings last_price",
@@ -297,6 +346,9 @@
     var pp = pricesEntry(n.ticker);
     if (hp){ hp.effAsOf = effTime(hp.asOf, hp.asOfLabel); hp.future = hp.effAsOf !== hp.asOf; }
     if (pp){ pp.effAsOf = effTime(pp.asOf, pp.asOfLabel); pp.future = pp.effAsOf !== pp.asOf; }
+    // Same price in both: it is the same mark, so use the prices.json bar time (e.g. the 4:00 PM close)
+    // rather than the snapshot/run time that holdings inherit when they carry no as_of.
+    if (hp && pp && samePrice(hp.price, pp.price)) return Object.assign({}, pp, { source:"prices.json (= holdings last_price)" });
     if (hp && pp) return ((pp.effAsOf || 0) > (hp.effAsOf || 0)) ? pp : hp;
     return hp || pp;
   }
@@ -456,7 +508,9 @@
   function renderPriceStatus(){
     var meta = state.liveMeta, el = document.getElementById("priceStatus");
     if (!el) return;
-    el.textContent = meta.lastAttempt ? ("Live prices last refreshed " + fmtET(meta.lastAttempt, true) + " — " + meta.lastResult + ". Live quotes expire after " + (LIVE_STALE_MS/60000) + " min.")
+    var u = state.liveUsage, usage = "";
+    if (meta.lastAttempt && u && u.fetched) usage = "; " + u.used + " of " + u.fetched + " fetched quotes in use" + (u.fetched > u.used ? " (" + (u.fetched - u.used) + " not newer than the committed marks, so committed prices are shown)" : "");
+    el.textContent = meta.lastAttempt ? ("Live prices last refreshed " + fmtET(meta.lastAttempt, true) + " — " + meta.lastResult + usage + ". Live quotes expire after " + (LIVE_STALE_MS/60000) + " min.")
                                       : "Live prices: not yet fetched.";
   }
 
@@ -501,14 +555,17 @@
   }
   function benchLevels(){
     var s = state.snapshot || {}, p = state.performance || {}, pr = state.prices || {};
-    var snapLvl = num(s.sp500_total_return), snapAt = toMs((s.sp500_total_return_source && s.sp500_total_return_source.bar_timestamp) || s.as_of);
+    // sp500_total_return_source may be an object with bar_timestamp (Day-0) or, since the scripted runs, a plain string.
+    var srcObj = s.sp500_total_return_source && typeof s.sp500_total_return_source === "object" ? s.sp500_total_return_source : null;
+    var snapLvl = num(s.sp500_total_return), snapAt = toMs((srcObj && srcObj.bar_timestamp) || s.as_of);
     if (snapLvl === null && s.sp500_total_return && typeof s.sp500_total_return === "object") snapLvl = pick(s.sp500_total_return, ["level","price"]);
     var c = snapLvl !== null ? { level:snapLvl, asOf:snapAt, effAsOf:effTime(snapAt, "snapshot_latest.json S&P TR timestamp"), source:"snapshot_latest.json" } : null;
     if (c) c.future = c.effAsOf !== c.asOf;
     var prv = pr.sp500_total_return, prLvl = null, prAt = null;
     if (prv != null){ if (typeof prv === "object"){ prLvl = pick(prv, ["level","price"]); prAt = toMs(prv.as_of) || toMs(pr.as_of); } else { prLvl = num(prv); prAt = toMs(pr.as_of); } }
     var prEff = effTime(prAt, "prices.json sp500_total_return as_of");
-    if (prLvl !== null && (!c || (prEff||0) > (c.effAsOf||0))) c = { level:prLvl, asOf:prAt, effAsOf:prEff, future: prEff !== prAt, source:"prices.json" };
+    // prices.json wins when newer, or when it carries the same level (then its bar time is the true time of the mark).
+    if (prLvl !== null && (!c || samePrice(prLvl, c.level) || (prEff||0) > (c.effAsOf||0))) c = { level:prLvl, asOf:prAt, effAsOf:prEff, future: prEff !== prAt, source:"prices.json" };
     var bl = p.benchmark_baseline || {};
     var base = num(bl.level), baseLbl = "official inception close";
     if (base === null){ base = num(bl.day0_intraday_level); baseLbl = "Day-0 intraday level (official close pending)"; }
@@ -604,7 +661,7 @@
     cards += card("Invested (positions)", fmtUSD(investedOK ? invested : null), nHold + " holding rows" +
       (nCost ? " &middot; " + nCost + " at cost (unpriced)" : "") + (nExcl ? " &middot; " + nExcl + " excluded (no price or cost)" : ""));
     var glPct = sumCost ? sumGL/sumCost : null;
-    cards += card("Unrealized gain/loss", fmtSignedUSD(sumGL) + ' <span class="small '+cls(glPct)+'">' + fmtPct(glPct) + '</span>',
+    cards += card("Unrealized gain/loss", fmtSignedUSD(sumGL) + ' <span class="small '+pcls(glPct)+'">' + fmtPct(glPct) + '</span>',
       "vs cost basis " + fmtUSD(sumCost) + (unknownTeams.length ? " &middot; excl. " + unknownTeams.join(", ") : ""), cls(sumGL));
     if (start !== null){
       var cur = curTotal !== null ? curTotal : committedTotal;
@@ -615,7 +672,7 @@
     var lvl = b.live ? b.live.price : (b.committed ? b.committed.level : null);
     var bsub = b.live ? ('quote ' + fmtQuoteTime(b.live.quoteTime) + ' &middot; committed ' + fmtLevel(b.committed && b.committed.level))
                       : (b.committed ? "committed " + fmtTime(b.committed.asOf) : "unavailable");
-    if (isNum(lvl) && isNum(b.base) && b.base) bsub += '<br>vs ' + esc(b.baseLbl) + ' ' + fmtLevel(b.base) + ': <span class="' + cls(lvl/b.base-1) + '">' + fmtPct(lvl/b.base-1) + '</span>';
+    if (isNum(lvl) && isNum(b.base) && b.base) bsub += '<br>vs ' + esc(b.baseLbl) + ' ' + fmtLevel(b.base) + ': <span class="' + pcls(lvl/b.base-1) + '">' + fmtPct(lvl/b.base-1) + '</span>';
     var bLiveFresh = b.live && (b.live.quoteTime == null || Date.now() - b.live.quoteTime <= LIVE_STALE_MS);
     cards += card("S&P 500 TR (^SP500TR)", fmtLevel(lvl) + (b.live ? (bLiveFresh ? ' <span class="badge live">live</span>' : ' <span class="badge committed">delayed</span>') : ''), bsub);
     document.getElementById("summaryCards").innerHTML = cards;
@@ -628,7 +685,7 @@
       (bl && bl.status ? "<br>Baseline: " + esc(bl.status) : "") + (p.as_of ? "<br>As of " + fmtTime(p.as_of) : "") +
       (perfFS && !perfFS.ok ? '<br><span class="neg">performance.json ' + esc(perfFS.msg) + (perfFS.stale ? " — showing last good load" : "") + '</span>' : "");
     function cellRow(label, obj, rowCls, bold){
-      return '<tr class="'+(rowCls||"")+'"><td>'+(bold?"<b>":"")+esc(label)+(bold?"</b>":"")+"</td>" + PERIODS.map(function(x){ var v = toFrac(periodVal(obj, x[0]), p); return '<td class="'+cls(v)+'">'+(bold?"<b>":"")+fmtPct(v)+(bold?"</b>":"")+"</td>"; }).join("") + "</tr>";
+      return '<tr class="'+(rowCls||"")+'"><td>'+(bold?"<b>":"")+esc(label)+(bold?"</b>":"")+"</td>" + PERIODS.map(function(x){ var v = toFrac(periodVal(obj, x[0]), p); return '<td class="'+pcls(v)+'">'+(bold?"<b>":"")+fmtPct(v)+(bold?"</b>":"")+"</td>"; }).join("") + "</tr>";
     }
     function diffObj(a, bb){ var o = {}; PERIODS.forEach(function(x){ var u = toFrac(periodVal(a, x[0]), null), w = toFrac(periodVal(bb, x[0]), null); o[x[0]] = (u !== null && w !== null) ? u - w : null; }); return o; }
     var html = "<thead><tr><th></th>" + PERIODS.map(function(x){ return "<th>"+x[1]+"</th>"; }).join("") + "</tr></thead><tbody>";
@@ -663,7 +720,7 @@
         th += '<div class="empty">No holdings — 100% cash.</div></section>';
         return;
       }
-      th += '<div class="scroll"><table class="holdings"><thead><tr><th>Ticker</th><th>Shares</th><th>Cost basis</th><th>Avg cost</th><th>Last committed</th><th>Live price</th><th>Current value</th><th>Gain/Loss $</th><th>Gain/Loss %</th></tr></thead><tbody>';
+      th += '<div class="scroll"><table class="holdings stack"><thead><tr><th>Ticker</th><th>Shares</th><th>Cost basis</th><th>Avg cost</th><th>Last committed</th><th>Live price</th><th>Current value</th><th>Gain/Loss $</th><th>Gain/Loss %</th></tr></thead><tbody>';
       tt.rows.forEach(function(r){
         var n = r.n, c = r.c, badge = "";
         var liveTip = c.live ? ("Quote via " + c.live.source + " · quote time " + fmtQuoteTime(c.live.quoteTime) + " · fetched " + fmtET(c.live.fetchedAt, true) + " · 'live' only while the quote is under " + LIVE_STALE_MS/60000 + " min old") : "";
@@ -683,11 +740,11 @@
           '<td data-label="Live price">'+liveCell+'</td>' +
           '<td data-label="Current value">'+fmtUSD(c.value)+(c.priceSource==="cost"?"†":"")+'</td>' +
           '<td class="gl '+cls(c.gl)+'" data-label="Gain/Loss $">'+fmtSignedUSD(c.gl)+'</td>' +
-          '<td class="gl '+cls(c.glPct)+'" data-label="Gain/Loss %">'+fmtPct(c.glPct)+'</td></tr>';
+          '<td class="gl '+pcls(c.glPct)+'" data-label="Gain/Loss %">'+fmtPct(c.glPct)+'</td></tr>';
       });
       th += '</tbody><tfoot>' +
         '<tr><td class="tk" data-label="">Subtotal</td><td class="blank"></td><td data-label="Cost basis">'+fmtUSD(tt.cost)+'</td><td class="blank"></td><td class="blank"></td><td class="blank"></td>' +
-        '<td data-label="Current value">'+fmtUSD(tt.holdingsValue)+'</td><td class="gl '+cls(tt.gl)+'" data-label="Gain/Loss $">'+fmtSignedUSD(tt.gl)+'</td><td class="gl '+cls(tt.glPct)+'" data-label="Gain/Loss %">'+fmtPct(tt.glPct)+'</td></tr>' +
+        '<td data-label="Current value">'+fmtUSD(tt.holdingsValue)+'</td><td class="gl '+cls(tt.gl)+'" data-label="Gain/Loss $">'+fmtSignedUSD(tt.gl)+'</td><td class="gl '+pcls(tt.glPct)+'" data-label="Gain/Loss %">'+fmtPct(tt.glPct)+'</td></tr>' +
         '<tr><td class="tk" data-label="">Cash</td><td class="blank" colspan="5"></td><td data-label="Cash">'+fmtUSD(tt.cash)+'</td><td class="blank" colspan="2"></td></tr>' +
         '<tr><td class="tk" data-label="">Team total</td><td class="blank" colspan="5"></td><td data-label="Team total">'+fmtUSD(tt.liveTotal)+'</td><td class="blank" colspan="2"></td></tr></tfoot></table></div>';
       var notes = [];
@@ -706,7 +763,224 @@
     document.getElementById("committedStatus").textContent = pr ? ("Committed prices.json as of " + fmtTime(pr.as_of) + (pr.source ? " (" + pr.source + ")" : "") + (pf && pf.stale ? " — last good load; latest fetch failed (" + pf.msg + ")" : "") + ".")
       : pfBroken ? ("prices.json failed to load/parse (" + pf.msg + "); committed prices come from each holding's last_price.")
       : "No prices.json committed (optional); committed prices come from each holding's last_price (as of the holding's as_of, else the snapshot time).";
+    // How many fetched quotes are actually in use (a quote not newer than the committed mark is fetched but unused).
+    var usedSet = {};
+    TEAMS.forEach(function(t){ totals[t].rows.forEach(function(r){ if (r.c.priceSource === "live" || r.c.priceSource === "delayed") usedSet[r.n.ticker] = 1; }); });
+    if (b.live) usedSet[BENCH_SYMBOL] = 1;
+    renderLedgerTabs();
+    state.liveUsage = { fetched: Object.keys(state.live).filter(function(k){ return freshLive(k); }).length, used: Object.keys(usedSet).length };
     renderPriceStatus();
+  }
+
+  // ---------- ledger.jsonl: Realized Positions and Dividends tabs ----------
+  // One JSON object per line. Bad lines are skipped and counted (warning), never fatal.
+  function parseJSONL(txt){
+    var lines = [], bad = [];
+    txt.split(/\r?\n/).forEach(function(l, i){
+      if (!l.trim()) return;
+      try { var o = JSON.parse(l); if (o && typeof o === "object" && !Array.isArray(o)) { o.__line = i+1; lines.push(o); } else bad.push(i+1); }
+      catch(e){ bad.push(i+1); }
+    });
+    return { lines:lines, bad:bad };
+  }
+  // Filter/sort state per tab; mirrored in the URL hash, e.g. #realized?team=team1&ticker=amz&order=newest
+  var view = { realized:{ team:"", ticker:"", newest:false }, dividends:{ team:"", ticker:"", newest:false } };
+  function matchRow(r, v){ return (!v.team || r.team === v.team) && (!v.ticker || String(r.ticker || "").toUpperCase().indexOf(v.ticker.trim().toUpperCase()) >= 0); }
+  function filterLabel(v){ var p = []; if (v.team) p.push(teamLabel(v.team)); if (v.ticker.trim()) p.push('ticker matching "' + v.ticker.trim().toUpperCase() + '"'); return p.join(", "); }
+  function teamCell(t){ return '<td class="team" data-label="Team" title="' + esc(TEAM_NAMES[t] || t || "") + '">' + esc(teamLabel(t)) + '</td>'; }
+  function teamLabel(t){ return t ? String(t).replace(/^team/, "Team ") : DASH; }
+  function fmtDate(iso){ // "YYYY-MM-DD" -> "Oct 22, 2026" (calendar date, no time zone shift)
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||"")); if (!m) return iso ? esc(iso) : DASH;
+    return new Date(Date.UTC(+m[1], +m[2]-1, +m[3])).toLocaleDateString("en-US",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric"});
+  }
+  function dateStartET(iso){ var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||"")); return m ? etWallToMs(+m[1], +m[2], +m[3], 0, 0) : null; }
+  function noteCell(txt){
+    if (!txt) return DASH;
+    txt = String(txt);
+    if (txt.length <= 60) return esc(txt);
+    return '<details title="' + esc(txt) + '"><summary>' + esc(txt.slice(0, 57)) + '… <span class="muted">(more)</span></summary>' + esc(txt) + '</details>';
+  }
+  function ledgerStatusHtml(){
+    var fs = state.fileStatus["ledger.jsonl"];
+    if (!state.ledger) return '<div class="empty">ledger.jsonl unavailable' + (fs ? " (" + esc(fs.msg) + ")" : "") + '.</div>';
+    var out = "";
+    if (fs && fs.stale) out += '<div class="team-warn">⚠ ledger.jsonl ' + esc(fs.msg) + ' — showing the last good load from earlier in this session.</div>';
+    if (state.ledger.bad.length) out += '<div class="team-warn">⚠ ' + state.ledger.bad.length + ' malformed ledger line(s) skipped.</div>';
+    return out;
+  }
+
+  // SELL lines as written by scripts/run.py: size = shares sold, decision_price = sale price,
+  // cash_delta = proceeds (+), cost_basis_delta = -(pro-rata average cost of the shares sold).
+  function realizedRows(){
+    if (!state.ledger) return null;
+    return state.ledger.lines.filter(function(l){ return l.action === "SELL"; }).map(function(l){
+      var shares = num(l.size); if (shares === null && num(l.shares_delta) !== null) shares = Math.abs(num(l.shares_delta));
+      var proceeds = num(l.cash_delta), cbd = num(l.cost_basis_delta);
+      var costRemoved = cbd !== null ? Math.abs(cbd) : null;
+      var gl = (proceeds !== null && costRemoved !== null) ? proceeds - costRemoved : null;   // = cash_delta + cost_basis_delta
+      return { ts:toMs(l.timestamp), eventDate:l.event_date || null, team:l.team || null, ticker:l.ticker || null, shares:shares,
+               price:num(l.decision_price), priceSource:l.price_source || "", proceeds:proceeds, costRemoved:costRemoved, gl:gl,
+               glPct:(gl !== null && costRemoved) ? gl/costRemoved : null, note:l.rationale || "", line:l.__line };
+    });
+  }
+  function sortRows(rows, key, newest){
+    return rows.slice().sort(function(a, b){ var d = (a[key]||0) - (b[key]||0); if (!d) d = a.line - b.line; return newest ? -d : d; });
+  }
+  function renderRealized(){
+    var el = document.getElementById("realizedBody"); if (!el) return;
+    var v = view.realized;
+    document.getElementById("realizedOrder").textContent = "Order: " + (v.newest ? "newest first ↓" : "oldest first ↑ (chronological)") + " — click to switch";
+    var html = ledgerStatusHtml(), all = realizedRows();
+    if (!all){ el.innerHTML = html; return; }
+    var rows = sortRows(all.filter(function(r){ return matchRow(r, v); }), "ts", v.newest);
+    if (!rows.length){ el.innerHTML = html + '<div class="empty">' + (all.length ? "No sales match the filter (" + esc(filterLabel(v)) + ")." : "No sales yet.") + '</div>'; return; }
+    if (filterLabel(v)) html += '<div class="muted small" style="margin-bottom:6px">Showing ' + rows.length + ' of ' + all.length + ' sales — filtered by ' + esc(filterLabel(v)) + '. Totals reflect the filtered rows.</div>';
+    var tp = 0, tc = 0, tg = 0, gOK = true;
+    html += '<div class="scroll"><table class="stack ledger-table" id="realizedTable"><thead><tr><th>Sale date (ET)</th><th>Team</th><th>Ticker</th><th>Shares sold</th><th>Sale price</th><th>Proceeds</th><th>Cost basis removed</th><th>Realized G/L $</th><th>Realized G/L %</th><th>Note</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      if (r.proceeds !== null) tp += r.proceeds;
+      if (r.costRemoved !== null) tc += r.costRemoved;
+      if (r.gl !== null) tg += r.gl; else gOK = false;
+      html += '<tr><td class="tk" data-label="Sale date">' + esc(fmtET(r.ts)) + (r.eventDate ? '<span class="asof">event date ' + fmtDate(r.eventDate) + '</span>' : '') + '</td>' +
+        teamCell(r.team) + '<td data-label="Ticker"><b>' + esc(r.ticker || "?") + '</b></td>' +
+        '<td data-label="Shares sold">' + fmtNum(r.shares) + '</td>' +
+        '<td data-label="Sale price" title="' + esc(r.priceSource) + '">' + fmtUSD(r.price) + '</td>' +
+        '<td data-label="Proceeds">' + fmtUSD(r.proceeds) + '</td><td data-label="Cost basis removed">' + fmtUSD(r.costRemoved) + '</td>' +
+        '<td class="gl ' + cls(r.gl) + '" data-label="Realized G/L $">' + fmtSignedUSD(r.gl) + '</td>' +
+        '<td class="gl ' + pcls(r.glPct) + '" data-label="Realized G/L %">' + fmtPct(r.glPct) + '</td>' +
+        '<td class="note" data-label="Note">' + noteCell(r.note) + '</td></tr>';
+    });
+    var tPct = tc ? tg/tc : null;
+    html += '</tbody><tfoot><tr><td class="tk" data-label="">Total (' + rows.length + ' sale' + (rows.length === 1 ? '' : 's') + ')</td><td class="blank" colspan="4"></td>' +
+      '<td data-label="Proceeds">' + fmtUSD(tp) + '</td><td data-label="Cost basis removed">' + fmtUSD(tc) + '</td>' +
+      '<td class="gl ' + cls(gOK ? tg : null) + '" data-label="Realized G/L $">' + fmtSignedUSD(gOK ? tg : null) + '</td>' +
+      '<td class="gl ' + pcls(gOK ? tPct : null) + '" data-label="Realized G/L %">' + fmtPct(gOK ? tPct : null) + '</td><td class="blank"></td></tr></tfoot></table></div>';
+    el.innerHTML = html;
+  }
+
+  // DIVIDEND lines as written by scripts/run.py (Amendment 2): size = shares held at the prior close,
+  // decision_price = per-share amount, cash_delta = total cash, event_date = ex-date. No pay date is stored,
+  // and run.py has no reinvestment (DRIP) path: dividends are cash. Reinvestment is shown only if the ledger
+  // carries an explicit link (see DASHBOARD.md); a nearby BUY is never assumed to be a reinvestment.
+  var DRIP_FLAGS = ["reinvested","reinvest","drip","dividend_reinvestment"];
+  var DRIP_REF_FIELDS = ["dividend_ref","reinvest_of","drip_of","dividend_id"];
+  function divKeys(d){
+    var k = [];
+    if (d.event_date) { k.push(d.event_date); k.push(d.team + ":" + d.ticker + ":" + d.event_date); }
+    if (d.timestamp) k.push(d.timestamp);
+    if (d.id) k.push(String(d.id));
+    if (d.dividend_id) k.push(String(d.dividend_id));
+    return k;
+  }
+  function linkedBuys(d){
+    var keys = divKeys(d);
+    return state.ledger.lines.filter(function(l){
+      if (l.action !== "BUY" || l.team !== d.team || l.ticker !== d.ticker) return false;
+      for (var i = 0; i < DRIP_REF_FIELDS.length; i++){ var v = l[DRIP_REF_FIELDS[i]]; if (v != null && keys.indexOf(String(v)) >= 0) return true; }
+      var flagged = DRIP_FLAGS.some(function(f){ return l[f] === true; });
+      return flagged && d.event_date && l.dividend_event_date === d.event_date;
+    });
+  }
+  function sharesHeldBefore(team, ticker, cutoff){
+    var sh = 0;
+    state.ledger.lines.forEach(function(l){
+      if (l.team !== team || l.ticker !== ticker || ["BUY","SELL","ADJUSTMENT","SPLIT"].indexOf(l.action) < 0) return;
+      var t = toMs(l.timestamp); if (t === null || cutoff === null || t >= cutoff) return;
+      var d = num(l.shares_delta); if (d !== null) sh += d;
+    });
+    return sh;
+  }
+  function dividendRows(){
+    if (!state.ledger) return null;
+    return state.ledger.lines.filter(function(l){ return l.action === "DIVIDEND"; }).map(function(d){
+      var dateStr = d.pay_date || d.event_date || null, dateKind = d.pay_date ? "pay date" : (d.event_date ? "ex-date (event_date)" : "booked (timestamp)");
+      var sortMs = dateStr ? dateStartET(dateStr) : null; if (sortMs === null) sortMs = toMs(d.timestamp);
+      var held = pick(d, ["shares_held","size"]), heldDerived = false;
+      if (held === null){ held = sharesHeldBefore(d.team, d.ticker, d.event_date ? dateStartET(d.event_date) : toMs(d.timestamp)); heldDerived = true; }
+      var cash = num(d.cash_delta);
+      var per = pick(d, ["amount_per_share","per_share","dividend_per_share","decision_price"]), perDerived = false;
+      if (per === null && cash !== null && held){ per = cash/held; perDerived = true; }
+      var buys = linkedBuys(d), flag = DRIP_FLAGS.some(function(f){ return d[f] === true; });
+      var rShares = pick(d, ["reinvest_shares","reinvested_shares"]), rCost = pick(d, ["reinvest_cost","reinvested_cost"]);
+      if (buys.length){
+        rShares = buys.reduce(function(a, b){ return a + (num(b.shares_delta) || num(b.size) || 0); }, 0);
+        rCost = buys.reduce(function(a, b){ var c = num(b.cash_delta); return a + (c !== null ? Math.abs(c) : (num(b.cost_basis_delta) || 0)); }, 0);
+      }
+      var reinvested = buys.length > 0 || flag || rShares !== null;
+      return { ts:toMs(d.timestamp), sortMs:sortMs, dateStr:dateStr, dateKind:dateKind, team:d.team || null, ticker:d.ticker || null,
+               held:held, heldDerived:heldDerived, per:per, perDerived:perDerived, cash:cash, reinvested:reinvested,
+               linkNote: buys.length ? buys.length + " linked BUY line(s)" : (reinvested ? "flagged on the dividend line" : ""),
+               rShares: reinvested ? rShares : null, rCost: reinvested ? rCost : null, source:d.price_source || "", note:d.rationale || "", line:d.__line };
+    });
+  }
+  function renderDividends(){
+    var el = document.getElementById("divBody"); if (!el) return;
+    var v = view.dividends;
+    document.getElementById("divOrder").textContent = "Order: " + (v.newest ? "newest first ↓" : "oldest first ↑ (chronological)") + " — click to switch";
+    var html = ledgerStatusHtml(), all = dividendRows();
+    if (!all){ el.innerHTML = html; return; }
+    var rows = sortRows(all.filter(function(r){ return matchRow(r, v); }), "sortMs", v.newest);
+    if (!rows.length){ el.innerHTML = html + '<div class="empty">' + (all.length ? "No dividends match the filter (" + esc(filterLabel(v)) + ")." : "No dividends yet.") + '</div>'; return; }
+    if (filterLabel(v)) html += '<div class="muted small" style="margin-bottom:6px">Showing ' + rows.length + ' of ' + all.length + ' dividends — filtered by ' + esc(filterLabel(v)) + '. Totals reflect the filtered rows.</div>';
+    var tCash = 0, tR = 0, anyDerived = false;
+    html += '<div class="scroll"><table class="stack ledger-table" id="divTable"><thead><tr><th>Pay / ex-date</th><th>Team</th><th>Ticker</th><th>Shares held</th><th>Amount / share</th><th>Total cash</th><th>Reinvested</th><th>Shares purchased</th><th>Cost of reinvested shares</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      if (r.cash !== null) tCash += r.cash;
+      if (r.rCost !== null) tR += r.rCost;
+      if (r.heldDerived || r.perDerived) anyDerived = true;
+      html += '<tr><td class="tk" data-label="Date" title="' + esc(r.note) + '">' + (r.dateStr ? fmtDate(r.dateStr) : esc(fmtET(r.ts))) +
+          '<span class="asof">' + esc(r.dateKind) + ' · booked ' + esc(fmtET(r.ts)) + '</span></td>' +
+        teamCell(r.team) + '<td data-label="Ticker"><b>' + esc(r.ticker || "?") + '</b></td>' +
+        '<td data-label="Shares held">' + fmtNum(r.held) + (r.heldDerived ? ' <span class="badge committed" title="Derived by replaying BUY/SELL/ADJUSTMENT/SPLIT shares_delta before the ex-date">derived</span>' : '') + '</td>' +
+        '<td data-label="Amount / share" title="' + esc(r.source) + '">' + fmtUSD(r.per, 4) + (r.perDerived ? ' <span class="badge committed" title="Derived: total cash ÷ shares held">derived</span>' : '') + '</td>' +
+        '<td data-label="Total cash">' + fmtUSD(r.cash) + '</td>' +
+        '<td data-label="Reinvested"' + (r.linkNote ? ' title="' + esc(r.linkNote) + '"' : '') + '>' + (r.reinvested ? "Yes" : "No (cash)") + '</td>' +
+        '<td data-label="Shares purchased">' + (r.reinvested ? fmtNum(r.rShares) : DASH) + '</td>' +
+        '<td data-label="Cost of reinvested shares">' + (r.reinvested ? fmtUSD(r.rCost) : DASH) + '</td></tr>';
+    });
+    html += '</tbody><tfoot><tr><td class="tk" data-label="">Total (' + rows.length + ' dividend' + (rows.length === 1 ? '' : 's') + ')</td><td class="blank" colspan="4"></td>' +
+      '<td data-label="Total cash">' + fmtUSD(tCash) + '</td><td class="blank"></td><td class="blank"></td>' +
+      '<td data-label="Cost of reinvested shares">' + fmtUSD(tR) + '</td></tr></tfoot></table></div>';
+    html += '<div class="muted small" style="margin-top:6px">Dates: the ledger stores no pay date; event_date is the ex-date, when Amendment 2 books the cash. Shares held and amount per share come from the ledger line (size, decision_price)' + (anyDerived ? '; values marked "derived" were computed' : '') + '. Reinvested = Yes only when the ledger explicitly links a BUY to the dividend.</div>';
+    el.innerHTML = html;
+  }
+  function renderLedgerTabs(){ renderRealized(); renderDividends(); }
+
+  // ---------- tabs (hash-linkable: #overview, #realized, #dividends) ----------
+  var TABS = ["overview","realized","dividends"];
+  function hashParts(){ var h = (location.hash || "").replace(/^#/, ""), i = h.indexOf("?"); return { tab: i < 0 ? h : h.slice(0, i), q: new URLSearchParams(i < 0 ? "" : h.slice(i+1)) }; }
+  function currentTab(){ var t = hashParts().tab; return TABS.indexOf(t) >= 0 ? t : "overview"; }
+  var CTRL = { realized:{ team:"realizedTeam", ticker:"realizedTicker" }, dividends:{ team:"divTeam", ticker:"divTicker" } };
+  function readHashFilters(){
+    var hp = hashParts(), v = view[hp.tab]; if (!v) return;
+    if (!hp.q.toString()){   // plain "#realized" (e.g. tab click): keep this tab's current filters
+      document.getElementById(CTRL[hp.tab].team).value = v.team;
+      document.getElementById(CTRL[hp.tab].ticker).value = v.ticker;
+      writeHashFilters(hp.tab);
+      return;
+    }
+    var team = hp.q.get("team") || "";
+    v.team = TEAMS.indexOf(team) >= 0 ? team : "";
+    v.ticker = hp.q.get("ticker") || "";
+    v.newest = hp.q.get("order") === "newest";
+    document.getElementById(CTRL[hp.tab].team).value = v.team;
+    document.getElementById(CTRL[hp.tab].ticker).value = v.ticker;
+  }
+  function writeHashFilters(tab){
+    var v = view[tab], q = new URLSearchParams();
+    if (v.team) q.set("team", v.team);
+    if (v.ticker.trim()) q.set("ticker", v.ticker.trim());
+    if (v.newest) q.set("order", "newest");
+    var h = "#" + tab + (q.toString() ? "?" + q.toString() : "");
+    if (location.hash !== h && window.history && history.replaceState) history.replaceState(null, "", h);
+  }
+  function showTab(){
+    var cur = currentTab();
+    TABS.forEach(function(t){
+      var p = document.getElementById("tab-" + t), b = document.getElementById("tabbtn-" + t);
+      if (p) p.hidden = t !== cur;
+      if (b) b.setAttribute("aria-selected", t === cur ? "true" : "false");
+    });
   }
 
   // ---------- main load ----------
@@ -716,6 +990,7 @@
     TEAMS.forEach(function(t){
       jobs.push(loadJSON("teams/"+t+"/holdings.json"), loadJSON("teams/"+t+"/cash.json"), loadJSON("teams/"+t+"/value.json"));
     });
+    jobs.push(loadJSON("ledger.jsonl", parseJSONL));   // index 15
     return Promise.all(jobs).then(function(res){
       function note(r, optional){
         if (r.ok) return;
@@ -743,6 +1018,10 @@
         state.teams[t] = { holdings:holdings, holdingsStatus:hs, holdingsMsg:h.msg, cash:cash, value:value, teamWarnings:tw };
         tw.forEach(function(w){ state.warnings.push(t + ": " + w); });
       });
+      var lg = res[15];
+      note(lg);
+      state.ledger = lg.data || null;
+      if (state.ledger && state.ledger.bad.length) state.warnings.push("ledger.jsonl: " + state.ledger.bad.length + " malformed line(s) skipped (line " + state.ledger.bad.slice(0, 10).join(", ") + (state.ledger.bad.length > 10 ? ", …" : "") + ").");
       state.lastLoad = Date.now();
       render();
     });
@@ -767,10 +1046,20 @@
   // pure helpers exposed for testing
   window.__delta = { normalizeHolding:normalizeHolding, holdingsArray:holdingsArray, computeRow:computeRow, committedPrice:committedPrice, periodVal:periodVal,
     parseYahoo:parseYahoo, sessionOpen:sessionOpen, quoteBeats:quoteBeats, parseSpark:parseSpark, teamTotals:teamTotals, state:state, loadAll:loadAll, refreshPrices:refreshPrices, render:render,
+    parseJSONL:parseJSONL, view:view, fmt:{ signedUSD:fmtSignedUSD, pct:fmtPct, cls:cls, pcls:pcls }, realizedRows:realizedRows, dividendRows:dividendRows,
     config:{ LIVE_STALE_MS:LIVE_STALE_MS, AUTO_MS:AUTO_MS } };
   document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("refreshBtn").addEventListener("click", function(){ fullRefresh(true); });
     document.getElementById("autoChk").addEventListener("change", schedule);
+    readHashFilters(); showTab();
+    window.addEventListener("hashchange", function(){ readHashFilters(); showTab(); renderLedgerTabs(); });
+    var R = { realized:renderRealized, dividends:renderDividends };
+    ["realized","dividends"].forEach(function(tab){
+      var v = view[tab], c = CTRL[tab];
+      document.getElementById(c.team).addEventListener("change", function(e){ v.team = e.target.value; writeHashFilters(tab); R[tab](); });
+      document.getElementById(c.ticker).addEventListener("input", function(e){ v.ticker = e.target.value; writeHashFilters(tab); R[tab](); });
+      document.getElementById(tab === "realized" ? "realizedOrder" : "divOrder").addEventListener("click", function(){ v.newest = !v.newest; writeHashFilters(tab); R[tab](); });
+    });
     fullRefresh(true); schedule();
   });
 })();

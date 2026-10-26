@@ -14,12 +14,13 @@ The dashboard is read-only. It never writes to the repository, never trades, and
 
 | File | Fields used |
 |---|---|
-| `snapshot_latest.json` | `as_of`, `inception_date`, `total_value`, `cash`, `unallocated_cash`, `teams.teamN.cash`, `teams.teamN.value` (fallback when a team file is missing or invalid), `sp500_total_return`, `sp500_total_return_source.bar_timestamp` |
+| `snapshot_latest.json` | `as_of`, `inception_date`, `total_value`, `cash`, `unallocated_cash`, `teams.teamN.cash`, `teams.teamN.value` (fallback when a team file is missing or invalid), `sp500_total_return`, `sp500_total_return_source` (an object with `bar_timestamp`, or a plain string, which is shown as the source label) |
 | `performance.json` | `as_of`, `inception_date`, `benchmark`, `benchmark_baseline.level` / `.day0_intraday_level` / `.status`, `method`, `account.starting_value`, `account.current_value`, `account.returns.*`, `account.benchmark_returns.*`, `teams.teamN.returns.*`, `teams.teamN.benchmark_returns.*` |
 | `teams/teamN/cash.json` | `cash` |
 | `teams/teamN/value.json` | `value` |
 | `teams/teamN/holdings.json` | see below |
 | `prices.json` (optional) | see below |
+| `ledger.jsonl` | Realized Positions and Dividends tabs only (see below) |
 
 ### Performance periods
 
@@ -124,7 +125,70 @@ Yahoo sends no CORS headers, and public proxies are unreliable, so the dependabl
 - Option B (a GitHub Actions/cron price committer) was **not adopted**. There is no workflow in this repo.
 - Under Amendment 8(b), dashboard-only files (`index.html`, `DASHBOARD.md`, `.nojekyll`, dashboard-only static assets) may be committed directly to `main` by the Project Delta Engineer bot. Everything else, including `prices.json`, stays with the Project Overseer.
 
-**Precedence note:** the Overseer writes holdings (`last_price`, no per-holding `as_of`) and `prices.json` in the same run. Holdings therefore take the snapshot `as_of` (the run time), which is usually a little later than the `prices.json` bar time, so the holding's `last_price` normally wins the "newer" test. That is harmless, since both come from the same run. `prices.json` wins whenever it is genuinely newer, or when a holding has no `last_price`.
+**Precedence note:** the Overseer writes holdings (`last_price`, no per-holding `as_of`) and `prices.json` in the same run. Holdings therefore take the snapshot `as_of` (the run time, e.g. 4:35 PM ET), which is a little later than the `prices.json` bar time (e.g. the 4:00 PM ET close). When the two prices are the same (relative difference ≤ 1e-6), the dashboard shows the `prices.json` entry and its **bar time**, tagged "· prices.json", because that is when the price was actually set. When they differ, the newer one wins as before. The S&P card follows the same rule: if the `prices.json` `sp500_total_return` level equals the snapshot level (or is newer), its `as_of` is shown as the committed time. `sp500_total_return_source` may be a plain string with no `bar_timestamp`, in which case the snapshot `as_of` is the snapshot's time.
+
+## Display rules
+
+- **Zeros:** any dollar amount with |x| < $0.005 is shown as `$0.00`, and any percentage that rounds to 0.00% is shown as `0.00%`: no sign and neutral colour (never `-$0.00` or a red/green zero).
+- **Fetched vs used quotes:** the price-status line says how many quotes were fetched and how many are actually in use, e.g. "99 of 99 quotes fetched …; 0 of 99 fetched quotes in use (99 not newer than the committed marks, so committed prices are shown)". After the close, quotes stamped at the 4:00 PM bar are not newer than the committed `prices.json` marks, so they are fetched but not used.
+
+## Tabs: Overview, Realized Positions, Dividends
+
+The page has three tabs. The URL hash selects the tab, so each tab can be linked: `#overview` (default; the dashboard described above, unchanged), `#realized` and `#dividends`. Warnings, errors and the footer are shown on every tab.
+
+The two ledger tabs read **only** `ledger.jsonl` (fetched with a relative URL, like the other files). It is parsed line by line: blank lines are skipped, and a line that is not valid JSON is skipped and counted, with a yellow warning naming the line numbers. A 404 or failed fetch is reported in the red box like any other file, and the tabs say "ledger.jsonl unavailable". The last good copy from the session is kept on a later failure. The dashboard never writes the ledger.
+
+**Filters (both tabs):** a **Team** dropdown (All teams / Team 1-4) and a **Ticker** box (case-insensitive substring, so `ap` matches `APA` and `AAPL`). The filters combine (AND). Totals are computed over the filtered rows only, and the tab shows "Showing X of Y …" when a filter is active. If nothing matches, the tab says so ("No sales match the filter …"). Each tab has its own filters. They are kept in the hash, e.g. `#realized?team=team3&ticker=ap&order=newest`, so filtered views can be linked. Switching tabs keeps each tab's filters.
+
+**Order:** rows are sorted by date (first column), **oldest first (chronological) by default**. The clearly labelled **Order** button switches to newest first (`order=newest` in the hash). Every row has a visible **Team** column, including in the stacked mobile card layout (≤ 640 px), and the full team name is in its tooltip.
+
+### Realized Positions
+
+Rows: ledger lines with `action == "SELL"`. If there are none, the tab says **"No sales yet."**
+
+| Column | Source |
+|---|---|
+| Sale date (ET) | `timestamp`, plus `event_date` if present |
+| Team | `team` |
+| Ticker | `ticker` |
+| Shares sold | `size`, else `abs(shares_delta)` |
+| Sale price | `decision_price` (tooltip: `price_source`) |
+| Proceeds | `cash_delta` |
+| Cost basis removed | `abs(cost_basis_delta)` (`scripts/run.py` removes the pro-rata average cost: `cost_basis × shares_sold / shares_held`) |
+| Realized G/L $ | `cash_delta + cost_basis_delta` (proceeds − cost removed) |
+| Realized G/L % | G/L $ ÷ cost basis removed |
+| Note | `rationale`, truncated to 60 characters; click to expand |
+
+A footer row totals the dollar amounts: proceeds, cost removed, G/L $ and the G/L % on the total cost removed.
+
+### Dividends
+
+**How dividends are actually recorded** (from `scripts/run.py`, `CONVENTIONS.md` and Amendment 2; the dashboard does not change any of this):
+
+- A cash dividend is booked as one ledger line with `action: "DIVIDEND"`, credited to **team cash on the ex-date** (Amendment 2). It is booked once per (team, ticker, ex-date).
+- `size` = shares held at the prior close (a ledger replay before 00:00 ET on the ex-date), `decision_price` = the per-share amount, `cash_delta` = the total cash, `event_date` = the **ex-date**, `timestamp` = when the run booked it, and `price_source` = the data source.
+- **No pay date is stored.** The Date column therefore shows the ex-date (`event_date`) and says so. It would show `pay_date` first if that field were ever added, and falls back to `timestamp` ("booked") if neither is present.
+- **There is no dividend reinvestment (DRIP).** `run.py` has no reinvest path. Dividends stay as cash, and any later purchase is an ordinary `BUY` decided by the team. So every current row shows **Reinvested: No (cash)**, with `—` for shares purchased and cost.
+
+| Column | Source |
+|---|---|
+| Pay / ex-date | `pay_date`, else `event_date` (ex-date), else `timestamp`; the source is labelled under the date, along with the booking time |
+| Team, Ticker | `team`, `ticker` |
+| Shares held | `shares_held` or `size`; if missing, derived by replaying BUY/SELL/ADJUSTMENT/SPLIT lines before the ex-date (marked "derived") |
+| Amount / share | `amount_per_share`, `per_share`, `dividend_per_share` or `decision_price`; if missing, `cash_delta ÷ shares held` (marked "derived") |
+| Total cash | `cash_delta` |
+| Reinvested | **Yes** only with an explicit ledger link (below), otherwise **No (cash)** |
+| Shares purchased / Cost of reinvested shares | the sum over the explicitly linked BUY lines of `shares_delta` (else `size`) / `abs(cash_delta)` (else `cost_basis_delta`); with no linked BUY, `reinvest_shares` / `reinvest_cost` on the DIVIDEND line |
+
+A total row sums the total cash (and reinvested cost) for the filtered rows.
+
+**Explicit reinvestment links** (none exist today; listed so that a future writer has a contract). A dividend counts as reinvested only if:
+
+- the DIVIDEND line itself has `reinvested`, `reinvest`, `drip` or `dividend_reinvestment` set to `true`, or carries `reinvest_shares` / `reinvested_shares`; or
+- a `BUY` line for the same team and ticker has `dividend_ref` / `reinvest_of` / `drip_of` / `dividend_id` equal to the dividend's `id`, `timestamp`, `event_date` or `"team:TICKER:event_date"`; or
+- a `BUY` line for the same team and ticker has one of the flags above set to `true` **and** `dividend_event_date` equal to the dividend's `event_date`.
+
+A `BUY` near the dividend in time or amount is **never** treated as a reinvestment.
 
 ## Load failures and reconciliation
 
