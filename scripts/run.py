@@ -6,6 +6,8 @@ Usage:
 
 See CONVENTIONS.md for schemas, interpretations and the proposal handoff process.
 Implements PROTOCOL.md + Amendments 1-8. Never edits PROTOCOL.md.
+Safeguards (CONVENTIONS.md 'Protected files and safeguards'): location/identity, protected-file integrity
+and foreign-writer guards run before any work; any failure exits 3 with nothing written or committed.
 """
 from __future__ import annotations
 
@@ -553,6 +555,203 @@ def git(repo, *args, check=True):
     return r.stdout.strip()
 
 
+# ---------------------------------------------------------------- safeguards (owner-approved 2026-10-26)
+# After the 2026-10-26 16:37 ET incident (connector uploads from a /tmp script copy overwrote team values and
+# replaced performance.json with a placeholder), every run verifies, before doing any work:
+#   1. its own location and git identity (only the Overseer clone, as the Overseer, may run/commit/push),
+#   2. that every protected file parses and has the keys this script writes (no placeholders),
+#   3. that no one other than the Overseer changed protected paths since the last Overseer commit.
+# Any failure logs a clear line, writes and commits nothing, moves no inbox file, and exits 3.
+EXPECTED_REPO = "/home/box/project-delta/repo"
+PO_EMAIL = "330484715+mfanninf1555@users.noreply.github.com"
+# Everything the run writes or depends on. Engineer dashboard-only files (Amendment 8(b): index.html,
+# DASHBOARD.md, .nojekyll, other dashboard assets) are deliberately NOT listed and stay committable by others.
+PROTECTED_PATHS = ["ledger.jsonl", "decisions.jsonl", "overrides.jsonl", "snapshot_latest.json", "snapshots/",
+                   "performance.json", "prices.json", "teams/", "runs/", "history/", "scripts/", "PROTOCOL.md",
+                   "CONVENTIONS.md", "requirements.txt", ".gitignore", ".github/"]
+PLACEHOLDER_RE = re.compile(r"placeholder|will update properly|\bTODO\b|\bTBD\b|\bFIXME\b|lorem ipsum", re.I)
+PERF_KEYS = ["as_of", "run_id", "run_slot", "inception_date", "benchmark", "benchmark_baseline",
+             "benchmark_current", "method", "note", "account", "teams"]
+SNAP_KEYS = ["as_of", "run_id", "run_slot", "session_date", "early_close", "inception_date", "total_value", "cash",
+             "unallocated_cash", "positions", "teams", "sp500_price", "sp500_price_source", "sp500_total_return",
+             "sp500_total_return_source", "amendments_referenced", "amendment_notes", "reconciliation",
+             "ledger_lines"]
+PRICES_KEYS = ["as_of", "source", "prices", "sp500_total_return"]
+LEDGER_KEYS = ["timestamp", "bot_id", "action", "ticker", "size", "decision_price", "price_source", "rationale",
+               "approving_bot"]
+HOLDING_KEYS = ["ticker", "shares", "cost_basis"]
+
+
+class GuardError(Exception):
+    pass
+
+
+def _is_num(x):
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
+
+
+def check_location_identity(repo):
+    """Guard 3: refuse unless this is the Overseer clone at EXPECTED_REPO, running its own script, with git's
+    effective author/committer identity equal to the Overseer identity (env overrides included)."""
+    want = os.path.realpath(EXPECTED_REPO)
+    script = os.path.realpath(__file__)
+    if os.path.realpath(repo) != want:
+        raise GuardError(f"WRONG LOCATION: --repo {repo} is not {EXPECTED_REPO}; runs from copies are forbidden")
+    if os.path.dirname(script) != os.path.join(want, "scripts"):
+        raise GuardError(f"WRONG LOCATION: script {script} is not {EXPECTED_REPO}/scripts/run.py; script copies are forbidden")
+    r = subprocess.run(["git", "-C", repo, "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    top = os.path.realpath(r.stdout.strip()) if r.returncode == 0 else None
+    if top != want:
+        raise GuardError(f"WRONG LOCATION: git top level is {top or 'not a git repo'}, expected {EXPECTED_REPO}")
+    for var in ("GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT"):
+        r = subprocess.run(["git", "-C", repo, "var", var], capture_output=True, text=True)
+        m = re.match(r"^(.*) <([^>]*)>", r.stdout.strip()) if r.returncode == 0 else None
+        name, email = (m.group(1), m.group(2)) if m else (None, None)
+        if name != PO_BOT or email != PO_EMAIL:
+            raise GuardError(f"WRONG IDENTITY: effective {var} is {name!r} <{email}>, expected {PO_BOT} <{PO_EMAIL}>")
+
+
+def check_protected_integrity(repo):
+    """Guard 1: every protected data file parses as JSON with the top-level keys this script writes."""
+    def bad(path, why):
+        raise GuardError(f"PROTECTED FILE INVALID: {os.path.relpath(path, repo)}: {why}")
+
+    def load(path, placeholder_scan=True):
+        if not os.path.isfile(path):
+            bad(path, "missing")
+        raw = open(path, encoding="utf-8", errors="replace").read()
+        if not raw.strip():
+            bad(path, "empty file")
+        if placeholder_scan and PLACEHOLDER_RE.search(raw):
+            bad(path, f"placeholder text {PLACEHOLDER_RE.search(raw).group(0)!r}")
+        try:
+            return json.loads(raw)
+        except Exception as e:
+            bad(path, f"not valid JSON ({e})")
+
+    def keys(path, obj, req):
+        if not isinstance(obj, dict):
+            bad(path, f"top level is {type(obj).__name__}, expected object")
+        miss = [k for k in req if k not in obj]
+        if miss:
+            bad(path, f"missing keys {miss}")
+
+    p = os.path.join(repo, "performance.json")
+    o = load(p)
+    keys(p, o, PERF_KEYS)
+    if not isinstance(o["account"], dict) or not isinstance(o["teams"], dict) or set(TEAMS) - set(o["teams"]):
+        bad(p, "account/teams sections malformed")
+    snaps = [os.path.join(repo, "snapshot_latest.json")] + sorted(glob.glob(os.path.join(repo, "snapshots", "*.json")))
+    for p in snaps:
+        o = load(p)
+        keys(p, o, SNAP_KEYS)
+        if not _is_num(o["total_value"]) or not isinstance(o["teams"], dict):
+            bad(p, "total_value/teams malformed")
+    p = os.path.join(repo, "prices.json")
+    o = load(p)
+    keys(p, o, PRICES_KEYS)
+    if not isinstance(o["prices"], dict):
+        bad(p, "prices is not an object")
+    for t in TEAMS:
+        td = os.path.join(repo, "teams", t)
+        for fn, req in (("cash.json", "cash"), ("value.json", "value")):
+            p = os.path.join(td, fn)
+            o = load(p)
+            keys(p, o, [req])
+            if not _is_num(o[req]):
+                bad(p, f"{req} is not a number")
+        p = os.path.join(td, "holdings.json")
+        o = load(p)
+        if not isinstance(o, list) or any(not isinstance(h, dict) or [k for k in HOLDING_KEYS if k not in h]
+                                          or not _is_num(h["shares"]) for h in o):
+            bad(p, f"expected a list of holdings with keys {HOLDING_KEYS}")
+        p = os.path.join(td, "proposals.json")
+        if os.path.exists(p):
+            o = load(p, placeholder_scan=False)  # free-text rationales; shape check only
+            if not isinstance(o, list):
+                bad(p, "expected a list")
+        for p in glob.glob(os.path.join(td, "*.json")):
+            load(p, placeholder_scan=False)  # any other team JSON must at least parse
+    # append-only logs: every line must be a JSON object (no placeholder scan: rationales are free text)
+    p = os.path.join(repo, "ledger.jsonl")
+    if not os.path.isfile(p):
+        bad(p, "missing")
+    n = 0
+    for i, raw in enumerate(open(p, encoding="utf-8", errors="replace"), 1):
+        if not raw.strip():
+            continue
+        try:
+            o = json.loads(raw)
+        except Exception as e:
+            bad(p, f"line {i} is not valid JSON ({e})")
+        if not isinstance(o, dict) or [k for k in LEDGER_KEYS if k not in o]:
+            bad(p, f"line {i} missing keys {[k for k in LEDGER_KEYS if not isinstance(o, dict) or k not in o]}")
+        n += 1
+    if n == 0:
+        bad(p, "no ledger lines")
+    for rel in ("decisions.jsonl", "overrides.jsonl", "history/eod.jsonl", "history/runs.jsonl"):
+        p = os.path.join(repo, rel)
+        if not os.path.exists(p):
+            continue
+        for i, raw in enumerate(open(p, encoding="utf-8", errors="replace"), 1):
+            if raw.strip():
+                try:
+                    if not isinstance(json.loads(raw), dict):
+                        raise ValueError("not an object")
+                except Exception as e:
+                    bad(p, f"line {i} is not a valid JSON object ({e})")
+    return n
+
+
+def _is_po(name, email):
+    return name == PO_BOT and email == PO_EMAIL
+
+
+def foreign_commits(repo, rng):
+    """Commits in a git range not authored by the Overseer that touch protected paths: [(sha, author, [paths])]."""
+    out = git(repo, "log", "--format=%x01%H%x00%an%x00%ae", "--name-only", rng, "--", *PROTECTED_PATHS)
+    res = []
+    for block in out.split("\x01")[1:]:
+        head, _, files = block.partition("\n")
+        sha, an, ae = head.split("\x00")
+        if not _is_po(an, ae):
+            res.append((sha[:7], f"{an} <{ae}>", [f for f in files.split("\n") if f.strip()]))
+    return res
+
+
+def check_foreign_writes(repo):
+    """Guard 2: protected paths at HEAD must equal those of the most recent Overseer-authored commit, and the
+    working tree must not hold uncommitted changes to tracked protected files."""
+    base = None
+    for ln in git(repo, "log", "--format=%H%x00%an%x00%ae", "HEAD").splitlines():
+        sha, an, ae = ln.split("\x00")
+        if _is_po(an, ae):
+            base = sha
+            break
+    if base is None:
+        raise GuardError("FOREIGN WRITE TO PROTECTED FILES: no Overseer-authored commit found on HEAD")
+    changed = [f for f in git(repo, "diff", "--name-only", base, "HEAD", "--", *PROTECTED_PATHS).splitlines() if f]
+    if changed:
+        who = foreign_commits(repo, f"{base}..HEAD") or [("?", "unknown", changed)]
+        detail = "; ".join(f"{s} {a}: {', '.join(p)}" for s, a, p in who)
+        raise GuardError(f"FOREIGN WRITE TO PROTECTED FILES: {detail} (last Overseer commit {base[:7]}; "
+                         f"recover by reverting with normal revert commits, never force-push)")
+    dirty = git(repo, "status", "--porcelain", "--untracked-files=no", "--", *PROTECTED_PATHS)
+    if dirty:
+        raise GuardError("FOREIGN WRITE TO PROTECTED FILES: uncommitted changes in the working tree: "
+                         + ", ".join(l[3:] for l in dirty.splitlines()))
+    return base[:7]
+
+
+def check_incoming(repo):
+    """Before pulling during push: refuse if origin/main gained foreign commits touching protected paths."""
+    git(repo, "fetch", "-q", "origin", "main")
+    bad = foreign_commits(repo, "HEAD..FETCH_HEAD")
+    if bad:
+        detail = "; ".join(f"{s} {a}: {', '.join(p)}" for s, a, p in bad)
+        raise GuardError(f"FOREIGN WRITE TO PROTECTED FILES: {detail} (arrived on origin/main during the run)")
+
+
 # ---------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser()
@@ -578,6 +777,26 @@ def main():
     run_id = f"{sdate.isoformat()}_{slot}"
     summary = {"run_id": run_id, "slot": slot, "dry_run": args.dry_run, "now_et": now.isoformat()}
 
+    # ---- safeguards: location/identity, protected-file integrity, foreign writers (before any work)
+    try:
+        check_location_identity(repo)
+        n = check_protected_integrity(repo)
+        if not args.dry_run and not args.no_git and not args.no_push:
+            git(repo, "pull", "--rebase", "-q", "origin", "main")
+            n = check_protected_integrity(repo)
+        base = check_foreign_writes(repo)
+        log(f"safeguards OK: location/identity, {n} ledger lines + protected files valid, "
+            f"protected paths match last Overseer commit {base}")
+    except GuardError as e:
+        log(str(e))
+        summary.update(status="guard_failed", error=str(e))
+        gl = os.path.join("/tmp", f"project-delta-guard-{run_id}.log")  # outside the repo: nothing written there
+        with open(gl, "w") as f:
+            f.write("\n".join(LOG) + "\n\nSUMMARY " + json.dumps(summary, indent=2) + "\n")
+        summary["log"] = gl
+        print(json.dumps(summary, indent=2))
+        return 3
+
     sess = session_info(sdate)
     if sess is None:
         summary.update(status="no_session", message=f"{sdate} is not an NYSE regular session (Amendment 5); no changes")
@@ -587,9 +806,6 @@ def main():
     if sess["early_close"]:
         log(f"early close day: official close {sess['close'].strftime('%H:%M')} ET (Amendment 5)")
 
-    if not args.dry_run and not args.no_git and not args.no_push:
-        git(repo, "pull", "--rebase", "-q", "origin", "main")
-
     if not args.force and os.path.exists(os.path.join(repo, "snapshots", f"{sdate.isoformat()}_{slot}.json")):
         summary.update(status="already_done", message="frozen snapshot for this run already exists; use --force to re-run")
         print(json.dumps(summary, indent=2))
@@ -598,6 +814,10 @@ def main():
     log_path = os.path.join(repo, "runs", f"{run_id}.log")
     try:
         rc = run(args, repo, inbox, slot, now, sess, run_id, summary)
+    except GuardError as e:
+        log(str(e))
+        summary.update(status="guard_failed", error=str(e))
+        rc = 3
     except ReconcileError as e:
         log(f"RECONCILIATION FAILURE: {e}")
         summary.update(status="reconcile_failed", error=str(e))
@@ -609,6 +829,8 @@ def main():
     if rc != 0 or not args.dry_run:
         if args.dry_run:
             log_path = os.path.join("/tmp", f"project-delta-dryrun-{run_id}.log")
+        elif summary.get("status") == "guard_failed":
+            log_path = os.path.join("/tmp", f"project-delta-guard-{run_id}.log")  # keep the repo untouched
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
         with open(log_path, "w") as f:
             f.write("\n".join(LOG) + "\n\nSUMMARY " + json.dumps(summary, indent=2) + "\n")
@@ -1075,11 +1297,18 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
 
     # ---- git
     if not args.no_git:
+        check_location_identity(repo)  # re-check right before committing (raises GuardError -> exit 3)
         git(repo, "add", "-A")
         msg = f"Run {sdate.isoformat()} {slot[:2]}:{slot[2:]} ET"
         git(repo, "commit", "-q", "-m", msg)
         if not args.no_push:
             for attempt in range(3):
+                try:
+                    check_incoming(repo)
+                except GuardError:
+                    # undo only our own unpushed run commit so nothing is pushed or moved; the slot can be re-run
+                    git(repo, "reset", "-q", "--hard", "HEAD~1")
+                    raise
                 git(repo, "pull", "--rebase", "-q", "origin", "main")
                 r = subprocess.run(["git", "-C", repo, "push", "-q", "origin", "HEAD:main"], capture_output=True, text=True)
                 if r.returncode == 0:

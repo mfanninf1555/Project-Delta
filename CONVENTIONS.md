@@ -20,7 +20,7 @@ protocol is silent or ambiguous, the reading used by the tooling is stated in th
 - Venv: `/home/box/project-delta/venv`. Pinned dependencies are in `requirements.txt`.
 - `--dry-run` computes and validates everything. It writes nothing to the repo, makes no commit, and leaves the inbox untouched. If a 1630 dry-run happens before the official close, it uses the latest regular-session quotes and marks them **INDICATIVE**.
 - Test-only flags: `--now ISO`, `--repo DIR`, `--inbox DIR`, `--no-git`, `--no-push`, `--force`.
-- Exit codes: `0` means OK, no session, or already done. `2` means reconciliation failed: the run log is written and nothing is committed. `3` means any other error, for example a missing price. A non-zero exit leaves the inbox untouched, so the slot can be re-run.
+- Exit codes: `0` means OK, no session, or already done. `2` means reconciliation failed: the run log is written and nothing is committed. `3` means any other error, for example a missing price, or a failed safeguard check (see *Protected files and safeguards*). A non-zero exit leaves the inbox untouched, so the slot can be re-run.
 - The script is idempotent per slot. If `snapshots/YYYY-MM-DD_HHMM.json` already exists, the run exits with `already_done`.
 - Commit message: `Run YYYY-MM-DD HH:MM ET`. The script runs `git pull --rebase` before the run and again before the push.
 
@@ -144,6 +144,34 @@ To grant an override, append one line to `overrides.jsonl` and commit it. The ov
 - The Project Delta Engineer bot may commit dashboard-only files directly to `main`: `index.html`, `DASHBOARD.md`, `.nojekyll`, and other static assets used only by the dashboard.
 - Everything else is committed only by the Project Overseer: the ledger, snapshots, performance, team files, `prices.json`, scripts, `CONVENTIONS.md` and `PROTOCOL.md`.
 - The run script commits with `git add -A` after `pull --rebase`, so it picks up only its own outputs.
+
+## Protected files and safeguards
+Adopted 2026-10-26 with the owner's (Matt's) approval, after two commits at 16:37 ET were uploaded through the GitHub connector from a copy of the run script in `/tmp/project-delta`. They overwrote the team value files and replaced `performance.json` with a placeholder. The fix was normal revert commits and a re-run of the slot.
+
+**Who may write what**
+- Only the Project Overseer may commit or push the protected files. It commits as `project-overseer-delta <330484715+mfanninf1555@users.noreply.github.com>`, from `/home/box/project-delta/repo`, through `scripts/run_slot.sh` or its own maintenance commits. The protected files are:
+  - `ledger.jsonl`, `decisions.jsonl` and `overrides.jsonl`;
+  - `snapshot_latest.json`, `snapshots/`, `performance.json`, `prices.json` and `history/`;
+  - `teams/` and `runs/`;
+  - `scripts/`, `PROTOCOL.md`, `CONVENTIONS.md`, `requirements.txt`, `.gitignore` and `.github/`.
+- The Project Delta Engineer may commit only dashboard-only files under Amendment 8(b), such as `index.html`, `DASHBOARD.md`, `.nojekyll` and other static dashboard assets.
+- The protected files must never be written through the GitHub connector or any other web or API upload route. Runs from any other folder, or from a copy of the script, are also forbidden. The run script blocks such writes and reports them.
+
+**Checks run at the start of every run (dry-runs included), before any work.** Any failure logs the line shown below and exits `3`. Nothing is written to the repo or committed, and no inbox file is moved. The guard log goes to `/tmp/project-delta-guard-<run_id>.log`.
+1. **Location and identity:** the run checks that `--repo`, the git top level and the script itself all sit in `/home/box/project-delta/repo`. It also checks that git's effective author and committer (`git var`, including any `GIT_*` environment overrides) are the Overseer identity. A failure logs `WRONG LOCATION: …` or `WRONG IDENTITY: …`. These checks run again just before the run commits.
+2. **Protected-file integrity:** the run checks the following files, both before and after the pre-run `git pull --rebase`. A failure logs `PROTECTED FILE INVALID: <file>: <reason>`.
+   - `performance.json`, `snapshot_latest.json`, every `snapshots/*.json`, `prices.json` and every `teams/team*/` JSON file must parse as JSON and carry the top-level keys the script writes. Cash, value and share fields must be numbers.
+   - The same files are rejected if they contain placeholder text (PLACEHOLDER, TODO, TBD, FIXME, "will update properly").
+   - Every line of `ledger.jsonl` must be a JSON object with the core ledger keys. `decisions.jsonl`, `overrides.jsonl` and `history/*.jsonl` must have one JSON object per line.
+3. **Foreign writers:** after the pull, the run finds the most recent commit on HEAD by the Overseer identity, meaning both the name and the email match. If any protected path differs between that commit's tree and HEAD, or a tracked protected file has uncommitted changes, the run logs `FOREIGN WRITE TO PROTECTED FILES: <sha> <author>: <paths>`. Commits by others that change only dashboard files pass.
+4. **At push time:** before each `pull --rebase` and push, the run fetches `origin/main`. If foreign commits that touch protected paths arrived during the run, it undoes its own unpushed run commit, pushes nothing and exits `3`.
+
+**Recovery**
+1. Revert the offending commits with normal revert commits (`git revert <sha>`) made as the Overseer.
+2. Push without force, then re-run the slot with `scripts/run_slot.sh <slot>` (add `--force` if that slot's frozen snapshot already exists).
+3. Never force-push, and never rewrite or delete history.
+
+Overseer reverts count as Overseer commits, so the guard passes once the reverts land.
 
 ## Reconciliation (Amendment 3)
 On every run:
