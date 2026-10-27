@@ -1,0 +1,43 @@
+[2026-10-27T16:39:40Z] safeguards OK: location/identity, 117 ledger lines + protected files valid, protected paths match last Overseer commit 45d00ff
+[2026-10-27T16:39:40Z] pre-run integrity OK: ledger lines=117, team files match replay
+[2026-10-27T16:40:18Z] corporate actions booked: 0
+[2026-10-27T16:40:37Z] reconcile: sum(team values)=999,295.60 + unallocated=0.00 vs master=999,295.59 diff=0.0
+[2026-10-27T16:40:37Z] approved=0 rejected=0 deferred=0 new_lines=0
+
+SUMMARY {
+  "run_id": "2026-10-27_1230",
+  "slot": "1230",
+  "dry_run": false,
+  "now_et": "2026-10-27T12:39:38.798559-04:00",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 999295.6,
+    "unallocated_cash": 0.0,
+    "master_total": 999295.59,
+    "diff": 0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-10-27",
+  "approved": 0,
+  "rejected": 0,
+  "deferred": 0,
+  "corporate_actions": 0,
+  "new_ledger_lines": 0,
+  "total_value": 999295.6,
+  "team_values": {
+    "team1": 248649.21,
+    "team2": 251049.24,
+    "team3": 248224.05,
+    "team4": 251373.1
+  },
+  "team_cash": {
+    "team1": 1995.11,
+    "team2": 14779.69,
+    "team3": 11309.45,
+    "team4": 78453.3
+  },
+  "sp500tr": 17330.58984375,
+  "decisions": [],
+  "prices_json_tickers": 98
+}

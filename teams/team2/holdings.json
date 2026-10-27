@@ -4,119 +4,119 @@
     "shares": 10.0,
     "cost_basis": 16308.4,
     "avg_cost": 1630.84,
-    "last_price": 1590.9000244140625,
-    "market_value": 15909.0,
-    "price_source": "Yahoo Finance ASML official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/ASML/history/)",
-    "weight": 0.062973
+    "last_price": 1636.8399658203125,
+    "market_value": 16368.4,
+    "price_source": "Yahoo Finance ASML latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/ASML/history/)",
+    "weight": 0.0652
   },
   {
     "ticker": "BRK-B",
     "shares": 46.0,
     "cost_basis": 24831.72,
     "avg_cost": 539.82,
-    "last_price": 548.5599975585938,
-    "market_value": 25233.76,
-    "price_source": "Yahoo Finance BRK-B official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/BRK-B/history/)",
-    "weight": 0.099883
+    "last_price": 545.1500244140625,
+    "market_value": 25076.9,
+    "price_source": "Yahoo Finance BRK-B latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/BRK-B/history/)",
+    "weight": 0.099888
   },
   {
     "ticker": "CB",
     "shares": 56.0,
     "cost_basis": 19960.36,
     "avg_cost": 356.435,
-    "last_price": 356.739990234375,
-    "market_value": 19977.44,
-    "price_source": "Yahoo Finance CB official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/CB/history/)",
-    "weight": 0.079077
+    "last_price": 354.8399963378906,
+    "market_value": 19871.04,
+    "price_source": "Yahoo Finance CB latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/CB/history/)",
+    "weight": 0.079152
   },
   {
     "ticker": "COST",
     "shares": 21.0,
     "cost_basis": 20886.81,
     "avg_cost": 994.61,
-    "last_price": 1005.1599731445312,
-    "market_value": 21108.36,
-    "price_source": "Yahoo Finance COST official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/COST/history/)",
-    "weight": 0.083554
+    "last_price": 992.1199951171875,
+    "market_value": 20834.52,
+    "price_source": "Yahoo Finance COST latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/COST/history/)",
+    "weight": 0.08299
   },
   {
     "ticker": "IDXX",
     "shares": 44.0,
     "cost_basis": 24548.92,
     "avg_cost": 557.93,
-    "last_price": 570.2100219726562,
-    "market_value": 25089.24,
-    "price_source": "Yahoo Finance IDXX official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/IDXX/history/)",
-    "weight": 0.099311
+    "last_price": 562.3049926757812,
+    "market_value": 24741.42,
+    "price_source": "Yahoo Finance IDXX latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/IDXX/history/)",
+    "weight": 0.098552
   },
   {
     "ticker": "MCD",
     "shares": 85.0,
     "cost_basis": 20954.2,
     "avg_cost": 246.52,
-    "last_price": 250.8300018310547,
-    "market_value": 21320.55,
-    "price_source": "Yahoo Finance MCD official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/MCD/history/)",
-    "weight": 0.084394
+    "last_price": 248.8300018310547,
+    "market_value": 21150.55,
+    "price_source": "Yahoo Finance MCD latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/MCD/history/)",
+    "weight": 0.084249
   },
   {
     "ticker": "MRSH",
     "shares": 65.0,
     "cost_basis": 12431.9,
     "avg_cost": 191.26,
-    "last_price": 194.72000122070312,
-    "market_value": 12656.8,
-    "price_source": "Yahoo Finance MRSH official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/MRSH/history/)",
-    "weight": 0.0501
+    "last_price": 189.7899932861328,
+    "market_value": 12336.35,
+    "price_source": "Yahoo Finance MRSH latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/MRSH/history/)",
+    "weight": 0.049139
   },
   {
     "ticker": "MSFT",
     "shares": 35.0,
     "cost_basis": 18615.45,
     "avg_cost": 531.87,
-    "last_price": 532.5999755859375,
-    "market_value": 18641.0,
-    "price_source": "Yahoo Finance MSFT official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/MSFT/history/)",
-    "weight": 0.073787
+    "last_price": 532.9500122070312,
+    "market_value": 18653.25,
+    "price_source": "Yahoo Finance MSFT latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/MSFT/history/)",
+    "weight": 0.074301
   },
   {
     "ticker": "PG",
     "shares": 130.0,
     "cost_basis": 20711.6,
     "avg_cost": 159.32,
-    "last_price": 159.9199981689453,
-    "market_value": 20789.6,
-    "price_source": "Yahoo Finance PG official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/PG/history/)",
-    "weight": 0.082292
+    "last_price": 158.85000610351562,
+    "market_value": 20650.5,
+    "price_source": "Yahoo Finance PG latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/PG/history/)",
+    "weight": 0.082257
   },
   {
     "ticker": "RMD",
     "shares": 81.0,
     "cost_basis": 19885.5,
     "avg_cost": 245.5,
-    "last_price": 253.1999969482422,
-    "market_value": 20509.2,
-    "price_source": "Yahoo Finance RMD official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/RMD/history/)",
-    "weight": 0.081182
+    "last_price": 249.66000366210938,
+    "market_value": 20222.46,
+    "price_source": "Yahoo Finance RMD latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/RMD/history/)",
+    "weight": 0.080552
   },
   {
     "ticker": "SPGI",
     "shares": 40.0,
     "cost_basis": 17524.8,
     "avg_cost": 438.12,
-    "last_price": 450.6499938964844,
-    "market_value": 18026.0,
-    "price_source": "Yahoo Finance SPGI official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/SPGI/history/)",
-    "weight": 0.071353
+    "last_price": 448.4150085449219,
+    "market_value": 17936.6,
+    "price_source": "Yahoo Finance SPGI latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/SPGI/history/)",
+    "weight": 0.071447
   },
   {
     "ticker": "V",
     "shares": 46.0,
     "cost_basis": 18702.22,
     "avg_cost": 406.57,
-    "last_price": 404.1600036621094,
-    "market_value": 18591.36,
-    "price_source": "Yahoo Finance V official close (daily Close, session 2026-10-26) @ 2026-10-26 close (https://finance.yahoo.com/quote/V/history/)",
-    "weight": 0.073591
+    "last_price": 400.5989990234375,
+    "market_value": 18427.55,
+    "price_source": "Yahoo Finance V latest regular-session quote (1m bar close) @ 2026-10-27T12:39-0400 ET (https://finance.yahoo.com/quote/V/history/)",
+    "weight": 0.073402
   }
 ]
