@@ -1,9 +1,1 @@
-{
-  "as_of": "2026-10-28T16:33:00Z",
-  "source": "Yahoo Finance latest regular-session quote",
-  "prices": {
-    "AMZN": {"price": 252.6772, "as_of": "2026-10-28T16:33:00Z"},
-    "TSM": {"price": 440.5, "as_of": "2026-10-28T16:33:00Z"}
-  },
-  "sp500_total_return": {"level": 17363.029296875, "as_of": "2026-10-28T16:33:00Z"}
-}
+PLACEHOLDER_WILL_REPLACE
