@@ -586,6 +586,37 @@ class GuardError(Exception):
     pass
 
 
+# Host check (adopted 2026-10-30, owner-approved): runs are allowed only on the Overseer's own box.
+EXPECTED_HOSTNAME = "grok-bot-vm-429005534"
+EXPECTED_MACHINE_ID = "be992e2cea5940209955b1d96b858ea2"
+
+
+def read_machine_id(path="/etc/machine-id"):
+    try:
+        with open(path) as f:
+            return f.read().strip()
+    except OSError:
+        return None
+
+
+def check_host(repo, hostname=None, machine_id=None):
+    """Guard 0: refuse unless hostname, /etc/machine-id and repo path are the Overseer box's.
+    hostname/machine_id parameters exist only so the check can be unit-tested; main() never passes them."""
+    import socket
+    hn = socket.gethostname() if hostname is None else hostname
+    mid = read_machine_id() if machine_id is None else machine_id
+    problems = []
+    if hn != EXPECTED_HOSTNAME:
+        problems.append(f"hostname {hn!r} != {EXPECTED_HOSTNAME!r}")
+    if mid != EXPECTED_MACHINE_ID:
+        problems.append(f"machine-id {(mid or 'unreadable')[:8]}... does not match")
+    if os.path.abspath(repo) != EXPECTED_REPO or os.path.realpath(repo) != os.path.realpath(EXPECTED_REPO):
+        problems.append(f"repo path {repo!r} != {EXPECTED_REPO!r}")
+    if problems:
+        raise GuardError("HOST CHECK FAILED: " + "; ".join(problems) + " - runs are allowed only on the Overseer box")
+    return hn
+
+
 def _is_num(x):
     return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
 
@@ -767,6 +798,16 @@ def main():
     args = ap.parse_args()
 
     repo, inbox, slot = args.repo, args.inbox, args.slot
+    # ---- host check first, live and dry runs alike, before anything else is read or written
+    try:
+        hostname = check_host(repo)
+        if args.now and not args.dry_run:
+            raise GuardError("HOST CHECK FAILED: --now is allowed only with --dry-run (live runs use the real clock)")
+    except GuardError as e:
+        print(str(e), file=sys.stderr)
+        print(json.dumps({"slot": slot, "dry_run": args.dry_run, "status": "host_check_failed", "error": str(e)}, indent=2))
+        return 3
+    log(f"host check OK: {hostname}, machine-id {EXPECTED_MACHINE_ID[:8]}..., repo {EXPECTED_REPO}")
     now = dt.datetime.now(ET)
     if args.now:
         now = dt.datetime.fromisoformat(args.now)
@@ -775,7 +816,7 @@ def main():
         now = now.astimezone(ET)
     sdate = now.date()
     run_id = f"{sdate.isoformat()}_{slot}"
-    summary = {"run_id": run_id, "slot": slot, "dry_run": args.dry_run, "now_et": now.isoformat()}
+    summary = {"run_id": run_id, "slot": slot, "dry_run": args.dry_run, "now_et": now.isoformat(), "hostname": hostname}
 
     # ---- safeguards: location/identity, protected-file integrity, foreign writers (before any work)
     try:
@@ -1285,7 +1326,8 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
     os.makedirs(hist_dir, exist_ok=True)
     with open(os.path.join(hist_dir, "runs.jsonl"), "a") as f:
         f.write(json.dumps({"run_id": run_id, "as_of": ts_now, "slot": slot, "values": vals,
-                            "sp500tr": bench[BENCH][0], "index": (current or {}).get("index")}) + "\n")
+                            "sp500tr": bench[BENCH][0], "index": (current or {}).get("index"),
+                            "hostname": summary.get("hostname")}) + "\n")
     if new_eod:
         with open(eod_path, "a") as f:
             f.write(json.dumps(new_eod) + "\n")
@@ -1297,6 +1339,7 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
 
     # ---- git
     if not args.no_git:
+        check_host(repo)  # re-check host right before committing
         check_location_identity(repo)  # re-check right before committing (raises GuardError -> exit 3)
         git(repo, "add", "-A")
         msg = f"Run {sdate.isoformat()} {slot[:2]}:{slot[2:]} ET"
