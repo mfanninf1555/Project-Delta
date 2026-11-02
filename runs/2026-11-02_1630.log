@@ -1,0 +1,126 @@
+[2026-11-02T21:34:24Z] host check OK: grok-bot-vm-429005534, machine-id be992e2c..., repo /home/box/project-delta/repo
+[2026-11-02T21:34:25Z] safeguards OK: location/identity, 133 ledger lines + protected files valid, protected paths match last Overseer commit 3118a19
+[2026-11-02T21:34:26Z] pre-run integrity OK: ledger lines=133, team files match replay
+[2026-11-02T21:34:48Z] corporate actions booked: 0
+[2026-11-02T21:34:48Z] APPROVED  team3 team3-20261102-M1-FSLR: ok
+[2026-11-02T21:34:53Z] APPROVED  team3 team3-20261102-M1-GM: ok
+[2026-11-02T21:34:53Z] APPROVED  team3 team3-20261102-M3-DECK: ok
+[2026-11-02T21:34:53Z] APPROVED  team3 team3-20261102-M3-GOOG: ok
+[2026-11-02T21:34:53Z] APPROVED  team3 team3-20261102-M3-GRMN: ok
+[2026-11-02T21:34:53Z] APPROVED  team3 team3-20261102-M3-INCY: ok
+[2026-11-02T21:34:53Z] APPROVED  team3 team3-20261102-M4-GM: ok
+[2026-11-02T21:34:53Z] APPROVED  team3 team3-20261102-M4-SNDK: ok
+[2026-11-02T21:34:55Z] reconcile: sum(team values)=973,402.72 + unallocated=0.00 vs master=973,402.72 diff=-0.0
+[2026-11-02T21:34:55Z] approved=8 rejected=0 deferred=0 new_lines=8
+
+SUMMARY {
+  "run_id": "2026-11-02_1630",
+  "slot": "1630",
+  "dry_run": false,
+  "now_et": "2026-11-02T16:34:24.559647-05:00",
+  "hostname": "grok-bot-vm-429005534",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 973402.72,
+    "unallocated_cash": 0.0,
+    "master_total": 973402.72,
+    "diff": -0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-11-02",
+  "approved": 8,
+  "rejected": 0,
+  "deferred": 0,
+  "corporate_actions": 0,
+  "new_ledger_lines": 8,
+  "total_value": 973402.72,
+  "team_values": {
+    "team1": 219833.48,
+    "team2": 260130.19,
+    "team3": 244162.38,
+    "team4": 249276.67
+  },
+  "team_cash": {
+    "team1": 9500.11,
+    "team2": 14831.64,
+    "team3": 10106.47,
+    "team4": 74907.82
+  },
+  "sp500tr": 16925.310546875,
+  "decisions": [
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M1-FSLR",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 182.0500030517578,
+      "amount": 2366.65
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M1-GM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 28.0,
+      "decision_price": 89.94000244140625,
+      "amount": 2518.32
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M3-DECK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 36.0,
+      "decision_price": 85.0,
+      "amount": 3060.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M3-GOOG",
+      "status": "approved",
+      "reasons": [],
+      "shares": 9.0,
+      "decision_price": 278.0400085449219,
+      "amount": 2502.36
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M3-GRMN",
+      "status": "approved",
+      "reasons": [],
+      "shares": 11.0,
+      "decision_price": 274.2900085449219,
+      "amount": 3017.19
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M3-INCY",
+      "status": "approved",
+      "reasons": [],
+      "shares": 26.0,
+      "decision_price": 120.04000091552734,
+      "amount": 3121.04
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M4-GM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 41.0,
+      "decision_price": 89.94000244140625,
+      "amount": 3687.54
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M4-SNDK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 2.0,
+      "decision_price": 1075.0799560546875,
+      "amount": 2150.16
+    }
+  ],
+  "prices_json_tickers": 96
+}
