@@ -1,0 +1,148 @@
+[2026-11-02T14:08:58Z] host check OK: grok-bot-vm-429005534, machine-id be992e2c..., repo /home/box/project-delta/repo
+[2026-11-02T14:09:00Z] safeguards OK: location/identity, 120 ledger lines + protected files valid, protected paths match last Overseer commit d70a848
+[2026-11-02T14:09:00Z] pre-run integrity OK: ledger lines=120, team files match replay
+[2026-11-02T14:09:20Z] corporate actions booked: 3
+[2026-11-02T14:09:21Z] APPROVED  team3 team3-20261102-M2-BE: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-EXPD: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-FCX: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-HPE: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-INTC: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-MRVL: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-ROST: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-SNDK: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-STLD: ok
+[2026-11-02T14:09:26Z] APPROVED  team3 team3-20261102-M2-STT: ok
+[2026-11-02T14:09:26Z] DEFERRED  team3 team3-20261102-M1-FSLR (execute_slot/date not this run)
+[2026-11-02T14:09:26Z] DEFERRED  team3 team3-20261102-M1-GM (execute_slot/date not this run)
+[2026-11-02T14:09:27Z] reconcile: sum(team values)=969,178.41 + unallocated=0.00 vs master=969,178.41 diff=-0.0
+[2026-11-02T14:09:28Z] approved=10 rejected=0 deferred=2 new_lines=13
+
+SUMMARY {
+  "run_id": "2026-11-02_0900",
+  "slot": "0900",
+  "dry_run": false,
+  "now_et": "2026-11-02T09:08:58.834233-05:00",
+  "hostname": "grok-bot-vm-429005534",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 969178.41,
+    "unallocated_cash": 0.0,
+    "master_total": 969178.41,
+    "diff": -0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-11-02",
+  "approved": 10,
+  "rejected": 0,
+  "deferred": 2,
+  "corporate_actions": 3,
+  "new_ledger_lines": 13,
+  "total_value": 969178.41,
+  "team_values": {
+    "team1": 221714.28,
+    "team2": 251910.75,
+    "team3": 245534.03,
+    "team4": 250019.35
+  },
+  "team_cash": {
+    "team1": 9500.11,
+    "team2": 14831.64,
+    "team3": 9174.55,
+    "team4": 74907.82
+  },
+  "sp500tr": 17011.140625,
+  "decisions": [
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-BE",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 203.1699981689453,
+      "amount": 2641.21
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-EXPD",
+      "status": "approved",
+      "reasons": [],
+      "shares": 15.0,
+      "decision_price": 198.85000610351562,
+      "amount": 2982.75
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-FCX",
+      "status": "approved",
+      "reasons": [],
+      "shares": 44.0,
+      "decision_price": 62.470001220703125,
+      "amount": 2748.68
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-HPE",
+      "status": "approved",
+      "reasons": [],
+      "shares": 56.0,
+      "decision_price": 55.09000015258789,
+      "amount": 3085.04
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-INTC",
+      "status": "approved",
+      "reasons": [],
+      "shares": 33.0,
+      "decision_price": 65.76000213623047,
+      "amount": 2170.08
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-MRVL",
+      "status": "approved",
+      "reasons": [],
+      "shares": 15.0,
+      "decision_price": 196.39999389648438,
+      "amount": 2946.0
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-ROST",
+      "status": "approved",
+      "reasons": [],
+      "shares": 13.0,
+      "decision_price": 228.27999877929688,
+      "amount": 2967.64
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-SNDK",
+      "status": "approved",
+      "reasons": [],
+      "shares": 2.0,
+      "decision_price": 1150.8900146484375,
+      "amount": 2301.78
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-STLD",
+      "status": "approved",
+      "reasons": [],
+      "shares": 12.0,
+      "decision_price": 250.8000030517578,
+      "amount": 3009.6
+    },
+    {
+      "team": "team3",
+      "proposal_id": "team3-20261102-M2-STT",
+      "status": "approved",
+      "reasons": [],
+      "shares": 18.0,
+      "decision_price": 169.77000427246094,
+      "amount": 3055.86
+    }
+  ],
+  "prices_json_tickers": 98
+}
