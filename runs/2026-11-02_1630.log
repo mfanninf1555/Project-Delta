@@ -122,5 +122,7 @@ SUMMARY {
       "amount": 2150.16
     }
   ],
-  "prices_json_tickers": 96
+  "prices_json_tickers": 96,
+  "log": "/home/box/project-delta/repo/runs/2026-11-02_1630.log",
+  "commit": "111bc4e925775ba9e9d7ca5d598fb5c3d20ec44c"
 }
