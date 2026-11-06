@@ -4,79 +4,79 @@
     "shares": 52.0,
     "cost_basis": 17387.24,
     "avg_cost": 334.37,
-    "last_price": 291.5299987792969,
-    "market_value": 15159.56,
-    "price_source": "Yahoo Finance AVGO official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/AVGO/history/)",
-    "weight": 0.064077
+    "last_price": 294.17498779296875,
+    "market_value": 15297.1,
+    "price_source": "Yahoo Finance AVGO latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/AVGO/history/)",
+    "weight": 0.064178
   },
   {
     "ticker": "CEG",
     "shares": 57.0,
     "cost_basis": 14753.88,
     "avg_cost": 258.84,
-    "last_price": 239.64999389648438,
-    "market_value": 13660.05,
-    "price_source": "Yahoo Finance CEG official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/CEG/history/)",
-    "weight": 0.057739
+    "last_price": 252.44000244140625,
+    "market_value": 14389.08,
+    "price_source": "Yahoo Finance CEG latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/CEG/history/)",
+    "weight": 0.060369
   },
   {
     "ticker": "GLDM",
     "shares": 245.0,
     "cost_basis": 19962.6,
     "avg_cost": 81.48,
-    "last_price": 81.05999755859375,
-    "market_value": 19859.7,
-    "price_source": "Yahoo Finance GLDM official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/GLDM/history/)",
-    "weight": 0.083944
+    "last_price": 80.34989929199219,
+    "market_value": 19685.73,
+    "price_source": "Yahoo Finance GLDM latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/GLDM/history/)",
+    "weight": 0.082591
   },
   {
     "ticker": "NOC",
     "shares": 37.0,
     "cost_basis": 19758.0,
     "avg_cost": 534.0,
-    "last_price": 525.25,
-    "market_value": 19434.25,
-    "price_source": "Yahoo Finance NOC official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/NOC/history/)",
-    "weight": 0.082146
+    "last_price": 526.1699829101562,
+    "market_value": 19468.29,
+    "price_source": "Yahoo Finance NOC latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/NOC/history/)",
+    "weight": 0.081678
   },
   {
     "ticker": "NVDA",
     "shares": 92.0,
     "cost_basis": 19915.24,
     "avg_cost": 216.47,
-    "last_price": 181.60000610351562,
-    "market_value": 16707.2,
-    "price_source": "Yahoo Finance NVDA official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/NVDA/history/)",
-    "weight": 0.070619
+    "last_price": 187.84500122070312,
+    "market_value": 17281.74,
+    "price_source": "Yahoo Finance NVDA latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/NVDA/history/)",
+    "weight": 0.072505
   },
   {
     "ticker": "RTX",
     "shares": 155.0,
     "cost_basis": 29967.7,
     "avg_cost": 193.34,
-    "last_price": 191.8800048828125,
-    "market_value": 29741.4,
-    "price_source": "Yahoo Finance RTX official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/RTX/history/)",
-    "weight": 0.125713
+    "last_price": 191.75999450683594,
+    "market_value": 29722.8,
+    "price_source": "Yahoo Finance RTX latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/RTX/history/)",
+    "weight": 0.124701
   },
   {
     "ticker": "VRT",
     "shares": 76.0,
     "cost_basis": 15962.64,
     "avg_cost": 210.034737,
-    "last_price": 176.72999572753906,
-    "market_value": 13431.48,
-    "price_source": "Yahoo Finance VRT official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/VRT/history/)",
-    "weight": 0.056773
+    "last_price": 183.09500122070312,
+    "market_value": 13915.22,
+    "price_source": "Yahoo Finance VRT latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/VRT/history/)",
+    "weight": 0.058381
   },
   {
     "ticker": "XLF",
     "shares": 358.0,
     "cost_basis": 19947.76,
     "avg_cost": 55.72,
-    "last_price": 57.5,
-    "market_value": 20585.0,
-    "price_source": "Yahoo Finance XLF official close (daily Close, session 2026-11-05) @ 2026-11-05 close (https://finance.yahoo.com/quote/XLF/history/)",
-    "weight": 0.08701
+    "last_price": 57.51499938964844,
+    "market_value": 20590.37,
+    "price_source": "Yahoo Finance XLF latest regular-session quote (1m bar close) @ 2026-11-06T12:34-0500 ET (https://finance.yahoo.com/quote/XLF/history/)",
+    "weight": 0.086386
   }
 ]
