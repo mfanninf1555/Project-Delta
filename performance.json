@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-11-04T21:37:28Z",
-  "run_id": "2026-11-04_1630",
+  "as_of": "2026-11-06T00:13:25Z",
+  "run_id": "2026-11-05_1630",
   "run_slot": "1630",
   "inception_date": "2026-10-20",
   "benchmark": "S&P 500 total return (^SP500TR)",
@@ -12,69 +12,69 @@
     "day0_intraday_level": 17315.7891
   },
   "benchmark_current": {
-    "level": 17255.849609375,
-    "source": "Yahoo Finance ^SP500TR official close (daily Close, session 2026-11-04) @ 2026-11-04 close 16:00 ET (https://finance.yahoo.com/quote/%5ESP500TR/history/)"
+    "level": 16504.259765625,
+    "source": "Yahoo Finance ^SP500TR official close (daily Close, session 2026-11-05) @ 2026-11-05 close 16:00 ET (https://finance.yahoo.com/quote/%5ESP500TR/history/)"
   },
   "method": "Time-weighted return: a value index is chain-linked between end-of-day (16:30 ET) valuation points, index_t = index_(t-1) * V_t / (V_(t-1) + external_flows); intra-day runs extend the index from the last EOD point. Teams have no external flows after Day 0 (Amendment 7), dividends/trades are internal. Period return = index_now / index_ref - 1 where ref = last EOD point before the period start (1d: previous session close; MTD/QTD/YTD: prior month/quarter/year end, or inception if later). 1y/3y/5y/10y are annualized and null until that much history exists; since_inception is always reported (cumulative). Benchmark uses ^SP500TR levels at the same reference points. See CONVENTIONS.md.",
   "note": null,
   "account": {
     "starting_value": 1000000.0,
-    "current_value": 983351.4,
+    "current_value": 946429.93,
     "returns": {
-      "1d": 0.00617982,
-      "mtd": 0.01468942,
-      "qtd": -0.01664861,
-      "ytd": -0.01664861,
+      "1d": -0.03754657,
+      "mtd": -0.02340868,
+      "qtd": -0.05357008,
+      "ytd": -0.05357008,
       "1y": null,
       "3y": null,
       "5y": null,
       "10y": null,
-      "since_inception": -0.01664861
+      "since_inception": -0.05357008
     },
     "benchmark_returns": {
-      "1d": 0.01581779,
-      "mtd": 0.01438522,
-      "qtd": -0.00286388,
-      "ytd": -0.00286388,
+      "1d": -0.04355566,
+      "mtd": -0.02979699,
+      "qtd": -0.04629479,
+      "ytd": -0.04629479,
       "1y": null,
       "3y": null,
       "5y": null,
       "10y": null,
-      "since_inception": -0.00286388
+      "since_inception": -0.04629479
     },
     "excess": {
-      "1d": -0.00963797,
-      "mtd": 0.0003042,
-      "qtd": -0.01378473,
-      "ytd": -0.01378473,
+      "1d": 0.00600909,
+      "mtd": 0.00638831,
+      "qtd": -0.00727529,
+      "ytd": -0.00727529,
       "1y": null,
       "3y": null,
       "5y": null,
       "10y": null,
-      "since_inception": -0.01378473
+      "since_inception": -0.00727529
     },
     "period_details": {
       "1d": {
-        "from_date": "2026-11-03",
-        "to": "2026-11-04T21:37:28Z",
+        "from_date": "2026-11-04",
+        "to": "2026-11-06T00:13:25Z",
         "basis": "period",
         "annualized": false
       },
       "mtd": {
         "from_date": "2026-10-30",
-        "to": "2026-11-04T21:37:28Z",
+        "to": "2026-11-06T00:13:25Z",
         "basis": "period",
         "annualized": false
       },
       "qtd": {
         "from_date": "2026-10-20",
-        "to": "2026-11-04T21:37:28Z",
+        "to": "2026-11-06T00:13:25Z",
         "basis": "since_inception (period began before inception)",
         "annualized": false
       },
       "ytd": {
         "from_date": "2026-10-20",
-        "to": "2026-11-04T21:37:28Z",
+        "to": "2026-11-06T00:13:25Z",
         "basis": "since_inception (period began before inception)",
         "annualized": false
       },
@@ -84,7 +84,7 @@
       "10y": null,
       "since_inception": {
         "from_date": "2026-10-20",
-        "to": "2026-11-04T21:37:28Z",
+        "to": "2026-11-06T00:13:25Z",
         "basis": "since_inception",
         "annualized": false
       }
@@ -98,62 +98,62 @@
   "teams": {
     "team1": {
       "starting_value": 250000.0,
-      "current_value": 224605.1,
+      "current_value": 208874.01,
       "returns": {
-        "1d": 0.00571323,
-        "mtd": 0.01303849,
-        "qtd": -0.1015796,
-        "ytd": -0.1015796,
+        "1d": -0.07003888,
+        "mtd": -0.05791359,
+        "qtd": -0.16450396,
+        "ytd": -0.16450396,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.1015796
+        "since_inception": -0.16450396
       },
       "benchmark_returns": {
-        "1d": 0.01581779,
-        "mtd": 0.01438522,
-        "qtd": -0.00286388,
-        "ytd": -0.00286388,
+        "1d": -0.04355566,
+        "mtd": -0.02979699,
+        "qtd": -0.04629479,
+        "ytd": -0.04629479,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.00286388
+        "since_inception": -0.04629479
       },
       "excess": {
-        "1d": -0.01010457,
-        "mtd": -0.00134673,
-        "qtd": -0.09871572,
-        "ytd": -0.09871572,
+        "1d": -0.02648323,
+        "mtd": -0.0281166,
+        "qtd": -0.11820917,
+        "ytd": -0.11820917,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.09871572
+        "since_inception": -0.11820917
       },
       "period_details": {
         "1d": {
-          "from_date": "2026-11-03",
-          "to": "2026-11-04T21:37:28Z",
+          "from_date": "2026-11-04",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "mtd": {
           "from_date": "2026-10-30",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "qtd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
         "ytd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
@@ -163,7 +163,7 @@
         "10y": null,
         "since_inception": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception",
           "annualized": false
         }
@@ -176,62 +176,62 @@
     },
     "team2": {
       "starting_value": 250000.0,
-      "current_value": 267627.5,
+      "current_value": 262871.78,
       "returns": {
-        "1d": 0.0343111,
-        "mtd": 0.06252036,
-        "qtd": 0.07051,
-        "ytd": 0.07051,
+        "1d": -0.01776992,
+        "mtd": 0.04363945,
+        "qtd": 0.05148712,
+        "ytd": 0.05148712,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": 0.07051
+        "since_inception": 0.05148712
       },
       "benchmark_returns": {
-        "1d": 0.01581779,
-        "mtd": 0.01438522,
-        "qtd": -0.00286388,
-        "ytd": -0.00286388,
+        "1d": -0.04355566,
+        "mtd": -0.02979699,
+        "qtd": -0.04629479,
+        "ytd": -0.04629479,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.00286388
+        "since_inception": -0.04629479
       },
       "excess": {
-        "1d": 0.01849331,
-        "mtd": 0.04813514,
-        "qtd": 0.07337388,
-        "ytd": 0.07337388,
+        "1d": 0.02578573,
+        "mtd": 0.07343645,
+        "qtd": 0.09778191,
+        "ytd": 0.09778191,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": 0.07337388
+        "since_inception": 0.09778191
       },
       "period_details": {
         "1d": {
-          "from_date": "2026-11-03",
-          "to": "2026-11-04T21:37:28Z",
+          "from_date": "2026-11-04",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "mtd": {
           "from_date": "2026-10-30",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "qtd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
         "ytd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
@@ -241,7 +241,7 @@
         "10y": null,
         "since_inception": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception",
           "annualized": false
         }
@@ -254,62 +254,62 @@
     },
     "team3": {
       "starting_value": 250000.0,
-      "current_value": 246211.28,
+      "current_value": 238102.44,
       "returns": {
-        "1d": 0.0112301,
-        "mtd": 0.00288853,
-        "qtd": -0.01515492,
-        "ytd": -0.01515492,
+        "1d": -0.03293448,
+        "mtd": -0.03014108,
+        "qtd": -0.04759028,
+        "ytd": -0.04759028,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.01515492
+        "since_inception": -0.04759028
       },
       "benchmark_returns": {
-        "1d": 0.01581779,
-        "mtd": 0.01438522,
-        "qtd": -0.00286388,
-        "ytd": -0.00286388,
+        "1d": -0.04355566,
+        "mtd": -0.02979699,
+        "qtd": -0.04629479,
+        "ytd": -0.04629479,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.00286388
+        "since_inception": -0.04629479
       },
       "excess": {
-        "1d": -0.0045877,
-        "mtd": -0.01149669,
-        "qtd": -0.01229104,
-        "ytd": -0.01229104,
+        "1d": 0.01062118,
+        "mtd": -0.00034409,
+        "qtd": -0.00129548,
+        "ytd": -0.00129548,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.01229104
+        "since_inception": -0.00129548
       },
       "period_details": {
         "1d": {
-          "from_date": "2026-11-03",
-          "to": "2026-11-04T21:37:28Z",
+          "from_date": "2026-11-04",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "mtd": {
           "from_date": "2026-10-30",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "qtd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
         "ytd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
@@ -319,7 +319,7 @@
         "10y": null,
         "since_inception": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception",
           "annualized": false
         }
@@ -332,62 +332,62 @@
     },
     "team4": {
       "starting_value": 250000.0,
-      "current_value": 244907.52,
+      "current_value": 236581.7,
       "returns": {
-        "1d": -0.02720319,
-        "mtd": -0.02044574,
-        "qtd": -0.02036992,
-        "ytd": -0.02036992,
+        "1d": -0.03399577,
+        "mtd": -0.05374644,
+        "qtd": -0.0536732,
+        "ytd": -0.0536732,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.02036992
+        "since_inception": -0.0536732
       },
       "benchmark_returns": {
-        "1d": 0.01581779,
-        "mtd": 0.01438522,
-        "qtd": -0.00286388,
-        "ytd": -0.00286388,
+        "1d": -0.04355566,
+        "mtd": -0.02979699,
+        "qtd": -0.04629479,
+        "ytd": -0.04629479,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.00286388
+        "since_inception": -0.04629479
       },
       "excess": {
-        "1d": -0.04302099,
-        "mtd": -0.03483096,
-        "qtd": -0.01750604,
-        "ytd": -0.01750604,
+        "1d": 0.00955988,
+        "mtd": -0.02394945,
+        "qtd": -0.00737841,
+        "ytd": -0.00737841,
         "1y": null,
         "3y": null,
         "5y": null,
         "10y": null,
-        "since_inception": -0.01750604
+        "since_inception": -0.00737841
       },
       "period_details": {
         "1d": {
-          "from_date": "2026-11-03",
-          "to": "2026-11-04T21:37:28Z",
+          "from_date": "2026-11-04",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "mtd": {
           "from_date": "2026-10-30",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "period",
           "annualized": false
         },
         "qtd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
         "ytd": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception (period began before inception)",
           "annualized": false
         },
@@ -397,7 +397,7 @@
         "10y": null,
         "since_inception": {
           "from_date": "2026-10-20",
-          "to": "2026-11-04T21:37:28Z",
+          "to": "2026-11-06T00:13:25Z",
           "basis": "since_inception",
           "annualized": false
         }
