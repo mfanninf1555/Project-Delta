@@ -114,10 +114,13 @@ def yf_retry(fn, *a, tries=5, **k):
             delay *= 2
 
 
-CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{t}"
+CHART_URL = "https://{host}.finance.yahoo.com/v8/finance/chart/{t}"
+CHART_HOSTS = ("query1", "query2")  # two real Yahoo chart front ends; they can disagree briefly
+EMPTY_RETRY_S = 10  # back-off step between re-asks after an empty chart response (10s, 20s, 30s)
+FALLBACK_FRESH_MIN = 15  # 12:30 fallbacks (2m/5m bars, chart meta) must be at most this many minutes old
 
 
-def yahoo_chart(t, start, end, interval, events=False):
+def yahoo_chart(t, start, end, interval, events=False, host="query1"):
     """Direct Yahoo Finance chart API (the endpoint yfinance itself uses). Fallback when yfinance's
     session/crumb is rate-limited. Returns (DataFrame[Close, Dividends, Stock Splits], meta, url)."""
     import pandas as pd
@@ -127,7 +130,7 @@ def yahoo_chart(t, start, end, interval, events=False):
     params = {"period1": s_ts, "period2": e_ts, "interval": interval, "includePrePost": "false"}
     if events:
         params["events"] = "div,split"
-    url = CHART_URL.format(t=t)
+    url = CHART_URL.format(host=host, t=t)
     delay = 3
     for i in range(5):
         r = requests.get(url, params=params, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
@@ -137,7 +140,12 @@ def yahoo_chart(t, start, end, interval, events=False):
         time.sleep(delay)
         delay *= 2
     r.raise_for_status()
-    res = r.json()["chart"]["result"][0]
+    body = r.json().get("chart") or {}
+    if not body.get("result"):
+        err = body.get("error") or {}
+        raise RuntimeError(f"{t}: Yahoo chart API ({host}) returned no result "
+                           f"({err.get('code')}: {err.get('description')})")
+    res = body["result"][0]
     meta = res.get("meta", {})
     ts = res.get("timestamp") or []
     q = (res.get("indicators", {}).get("quote") or [{}])[0]
@@ -197,11 +205,23 @@ class Pricer:
                 log(f"yfinance unavailable for {t} ({e}); using Yahoo chart API directly")
                 if "Rate" in str(e) or "429" in str(e):
                     self.yf_down = True
-        df, meta, _, _ = yahoo_chart(t, kw["start"], kw["end"], kw["interval"])
-        self.meta[t] = meta
-        if len(df) == 0:
-            raise RuntimeError(f"{t}: empty Yahoo chart response")
-        return df
+        # An empty chart response has been seen for one symbol while every other symbol priced fine
+        # (HLT, 12:30 on 2026-11-09 and 2026-11-10); the same request returned full data later. Re-ask
+        # both real Yahoo front ends with a short back-off before giving up. Nothing is ever filled in.
+        window = f"{kw['interval']} {kw['start']} -> {kw['end']}"
+        tries = len(CHART_HOSTS) * 2
+        for i in range(tries):
+            host = CHART_HOSTS[i % len(CHART_HOSTS)]
+            if i:
+                time.sleep(EMPTY_RETRY_S * i)
+            df, meta, _, _ = yahoo_chart(t, kw["start"], kw["end"], kw["interval"], host=host)
+            self.meta[t] = meta
+            if len(df):
+                if i:
+                    log(f"{t}: Yahoo chart API {host} returned {len(df)} bars ({window}) on try {i + 1}/{tries}")
+                return df
+            log(f"{t}: empty Yahoo chart response from {host} ({window}), try {i + 1}/{tries}")
+        raise RuntimeError(f"{t}: empty Yahoo chart response ({window}; tried {'/'.join(CHART_HOSTS)} {tries} times)")
 
     def _daily(self, t, day):
         h = self._hist(t, start=day - dt.timedelta(days=10), end=day + dt.timedelta(days=1),
@@ -239,17 +259,68 @@ class Pricer:
             log(f"{t}: close for {day} not yet published; retrying in 60s")
             time.sleep(60)
 
-    def _p1230(self, t):  # latest regular-session quote at decision time
-        day = self.sess["date"]
-        h = self._hist(t, start=day, end=day + dt.timedelta(days=1), interval="1m", prepost=False)
-        h = h[[(i.to_pydatetime() <= self.now) and (i.to_pydatetime() < self.sess["close"]) for i in h.index]]
+    def _last_bar(self, t, h, interval, fresh):
+        """Latest regular-session bar close at decision time. A bar may end at most 1 minute after the
+        decision time (the same tolerance a 1m bar has always had). fresh=True also requires the bar
+        to be at most FALLBACK_FRESH_MIN minutes old (used for the 2m/5m fallbacks)."""
+        if len(h) == 0:
+            raise RuntimeError(f"{t}: no {interval} bars returned for {self.sess['date']}")
+        mins = int(interval.rstrip("m"))
+        latest_start = self.now - dt.timedelta(minutes=mins - 1)
+        h = h[[(i.to_pydatetime() <= latest_start) and (i.to_pydatetime() >= self.sess["open"])
+               and (i.to_pydatetime() < self.sess["close"]) for i in h.index]]
         h = h[h["Close"].notna()]
         if len(h) == 0:
-            raise RuntimeError(f"{t}: no regular-session 1m quote for {day} up to {self.now}")
+            raise RuntimeError(f"{t}: no regular-session {interval} quote for {self.sess['date']} up to {self.now}")
         ts = h.index[-1].tz_convert(ET)
+        if fresh and self.now - ts.to_pydatetime() > dt.timedelta(minutes=FALLBACK_FRESH_MIN):
+            raise RuntimeError(f"{t}: latest {interval} bar {ts.strftime('%H:%M')} ET is older than "
+                               f"{FALLBACK_FRESH_MIN} min at {self.now.strftime('%H:%M')} ET")
+        px = float(h["Close"].iloc[-1])
+        if not (math.isfinite(px) and px > 0):
+            raise RuntimeError(f"{t}: invalid {interval} bar close {px!r}")
         self.bar_time[t] = ts.to_pydatetime()  # bar start time: never later than the decision time
-        return float(h["Close"].iloc[-1]), self._src(t, "latest regular-session quote (1m bar close)",
-                                                     ts.strftime("%Y-%m-%dT%H:%M%z") + " ET")
+        return px, self._src(t, f"latest regular-session quote ({interval} bar close"
+                             + (", fallback: no 1m data" if interval != "1m" else "") + ")",
+                             ts.strftime("%Y-%m-%dT%H:%M%z") + " ET")
+
+    def _p1230(self, t):  # latest regular-session quote at decision time
+        day = self.sess["date"]
+        try:
+            h = self._hist(t, start=day, end=day + dt.timedelta(days=1), interval="1m", prepost=False)
+            return self._last_bar(t, h, "1m", fresh=False)
+        except Exception as e:
+            if "Rate" in str(e) or "429" in str(e) or "404" in str(e):
+                raise  # rate-limited or symbol unknown to Yahoo: no fallback can help, stop here
+            tried = [f"1m: {e}"]
+        # Fallbacks: real Yahoo quotes only, each with a freshness check; if none qualifies the run stops.
+        log(f"{t}: no usable 1m data ({tried[0]}); trying 2m/5m bars, then chart regularMarketPrice "
+            f"(each must be a real regular-session quote <= {FALLBACK_FRESH_MIN} min old)")
+        for iv in ("2m", "5m"):
+            for host in CHART_HOSTS:
+                try:
+                    df, meta, _, _ = yahoo_chart(t, day, day + dt.timedelta(days=1), iv, host=host)
+                    self.meta[t] = meta or self.meta.get(t)
+                    res = self._last_bar(t, df, iv, fresh=True)
+                    log(f"{t}: priced from {iv} bars ({host}) at {res[1]}")
+                    return res
+                except Exception as e:
+                    tried.append(f"{iv}/{host}: {e}")
+        md = self.meta.get(t) or {}
+        px, qtime = md.get("regularMarketPrice"), md.get("regularMarketTime")
+        if isinstance(px, (int, float)) and isinstance(qtime, (int, float)) and math.isfinite(px) and px > 0:
+            qt = dt.datetime.fromtimestamp(int(qtime), ET)
+            if (self.sess["open"] <= qt < self.sess["close"] and qt <= self.now + dt.timedelta(minutes=1)
+                    and self.now - qt <= dt.timedelta(minutes=FALLBACK_FRESH_MIN)):
+                self.bar_time[t] = min(qt, self.now)
+                log(f"{t}: priced from chart meta regularMarketPrice {px} @ {qt.strftime('%H:%M:%S')} ET")
+                return float(px), self._src(t, "latest regular-session quote (chart regularMarketPrice, "
+                                            "fallback: no intraday bars)", qt.strftime("%Y-%m-%dT%H:%M:%S%z") + " ET")
+            tried.append(f"meta: regularMarketTime {qt.isoformat()} not a fresh regular-session quote")
+        else:
+            tried.append("meta: no regularMarketPrice/regularMarketTime")
+        raise RuntimeError(f"{t}: no valid regular-session price for {day} up to {self.now.strftime('%H:%M')} ET "
+                           f"(nothing invented; run stops). Tried: " + " | ".join(tried))
 
     def quote_type(self, t):
         try:

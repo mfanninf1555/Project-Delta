@@ -32,7 +32,7 @@ protocol is silent or ambiguous, the reading used by the tooling is stated in th
 | Slot | Price used for fills and marks |
 |---|---|
 | 0900 | Official close of the previous NYSE session (daily `Close`, `auto_adjust=False`) |
-| 1230 | Latest regular-session quote at decision time: the close of the last 1-minute bar at or before the run time, regular session only |
+| 1230 | Latest regular-session quote at decision time: the close of the last 1-minute bar at or before the run time, regular session only. If Yahoo returns no 1-minute data after 4 attempts (query1/query2, 10/20/30 s waits), the run falls back in order to the last real 2-minute bar, the last real 5-minute bar, then Yahoo's regular-market last-trade price from chart meta; each must be from today's session and no more than 15 minutes old, and `price_source` records which fallback was used. Nothing is carried forward or invented: if no fresh real price exists, the run stops (exit 3) without committing |
 | 1630 | Official close of today's session (daily `Close`). If the close is not published yet, the run retries every 60 s for up to 20 min, then fails without committing |
 
 - Source: Yahoo Finance through `yfinance`. If yfinance is rate-limited or fails, the script calls the Yahoo Finance chart API directly (`https://query1.finance.yahoo.com/v8/finance/chart/<T>`), which is the same Yahoo data.
