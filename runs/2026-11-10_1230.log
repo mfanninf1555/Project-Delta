@@ -1,0 +1,31 @@
+[2026-11-10T17:38:08Z] host check OK: grok-bot-vm-429005534, machine-id be992e2c..., repo /home/box/project-delta/repo
+[2026-11-10T17:38:08Z] safeguards OK: location/identity, 147 ledger lines + protected files valid, protected paths match last Overseer commit 93249f8
+[2026-11-10T17:38:10Z] pre-run integrity OK: ledger lines=147, team files match replay
+[2026-11-10T17:38:44Z] corporate actions booked: 0
+[2026-11-10T17:38:48Z] yfinance retry 1/1 after error: $HLT: possibly delisted; no price data found  (1m 2026-11-10 -> 2026-11-11)
+[2026-11-10T17:38:53Z] yfinance unavailable for HLT ($HLT: possibly delisted; no price data found  (1m 2026-11-10 -> 2026-11-11)); using Yahoo chart API directly
+[2026-11-10T17:38:53Z] ERROR: Traceback (most recent call last):
+  File "/home/box/project-delta/repo/scripts/run.py", line 857, in main
+    rc = run(args, repo, inbox, slot, now, sess, run_id, summary)
+  File "/home/box/project-delta/repo/scripts/run.py", line 1150, in run
+    pr, src = pricer.price(tk)
+              ~~~~~~~~~~~~^^^^
+  File "/home/box/project-delta/repo/scripts/run.py", line 182, in price
+    res = getattr(self, "_p" + self.slot)(t)
+  File "/home/box/project-delta/repo/scripts/run.py", line 244, in _p1230
+    h = self._hist(t, start=day, end=day + dt.timedelta(days=1), interval="1m", prepost=False)
+  File "/home/box/project-delta/repo/scripts/run.py", line 203, in _hist
+    raise RuntimeError(f"{t}: empty Yahoo chart response")
+RuntimeError: HLT: empty Yahoo chart response
+
+
+SUMMARY {
+  "run_id": "2026-11-10_1230",
+  "slot": "1230",
+  "dry_run": false,
+  "now_et": "2026-11-10T12:38:08.323116-05:00",
+  "hostname": "grok-bot-vm-429005534",
+  "early_close": false,
+  "status": "error",
+  "error": "HLT: empty Yahoo chart response"
+}
