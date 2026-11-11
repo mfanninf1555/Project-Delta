@@ -1,6 +1,6 @@
 {
   "as_of": "2026-11-10T21:00:00Z",
-  "source": "Yahoo Finance official close",
+  "source": "Yahoo Finance previous official close",
   "prices": {
     "ALL": {
       "price": 261.1199951171875,
@@ -359,7 +359,7 @@
       "as_of": "2026-11-10T21:00:00Z"
     },
     "VRSN": {
-      "price": 311.114990234375,
+      "price": 311.1199951171875,
       "as_of": "2026-11-10T21:00:00Z"
     },
     "VRT": {
