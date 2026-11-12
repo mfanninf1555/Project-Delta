@@ -1,6 +1,6 @@
 {
   "as_of": "2026-11-11T21:00:00Z",
-  "source": "Yahoo Finance official close",
+  "source": "Yahoo Finance previous official close",
   "prices": {
     "ALL": {
       "price": 262.17999267578125,
@@ -127,7 +127,7 @@
       "as_of": "2026-11-11T21:00:00Z"
     },
     "GEN": {
-      "price": 30.635000228881836,
+      "price": 30.639999389648438,
       "as_of": "2026-11-11T21:00:00Z"
     },
     "GLDM": {
@@ -227,7 +227,7 @@
       "as_of": "2026-11-11T21:00:00Z"
     },
     "MSFT": {
-      "price": 521.125,
+      "price": 521.1300048828125,
       "as_of": "2026-11-11T21:00:00Z"
     },
     "MU": {
