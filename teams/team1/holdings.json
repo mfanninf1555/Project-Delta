@@ -6,7 +6,7 @@
     "avg_cost": 262.63,
     "last_price": 266.6600036621094,
     "market_value": 33065.84,
-    "price_source": "Yahoo Finance AMZN official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/AMZN/history/)",
+    "price_source": "Yahoo Finance AMZN official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/AMZN/history/)",
     "weight": 0.152156
   },
   {
@@ -16,7 +16,7 @@
     "avg_cost": 171.51,
     "last_price": 131.50999450683594,
     "market_value": 16438.75,
-    "price_source": "Yahoo Finance CRDO official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/CRDO/history/)",
+    "price_source": "Yahoo Finance CRDO official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/CRDO/history/)",
     "weight": 0.075645
   },
   {
@@ -26,7 +26,7 @@
     "avg_cost": 256.43,
     "last_price": 184.16000366210938,
     "market_value": 17863.52,
-    "price_source": "Yahoo Finance DDOG official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/DDOG/history/)",
+    "price_source": "Yahoo Finance DDOG official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/DDOG/history/)",
     "weight": 0.082201
   },
   {
@@ -36,7 +36,7 @@
     "avg_cost": 340.274947,
     "last_price": 295.7699890136719,
     "market_value": 28098.15,
-    "price_source": "Yahoo Finance GOOGL official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/GOOGL/history/)",
+    "price_source": "Yahoo Finance GOOGL official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/GOOGL/history/)",
     "weight": 0.129297
   },
   {
@@ -46,7 +46,7 @@
     "avg_cost": 428.515075,
     "last_price": 443.5899963378906,
     "market_value": 29720.53,
-    "price_source": "Yahoo Finance ISRG official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/ISRG/history/)",
+    "price_source": "Yahoo Finance ISRG official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/ISRG/history/)",
     "weight": 0.136763
   },
   {
@@ -56,7 +56,7 @@
     "avg_cost": 1879.500087,
     "last_price": 1491.489990234375,
     "market_value": 29758.38,
-    "price_source": "Yahoo Finance MELI official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/MELI/history/)",
+    "price_source": "Yahoo Finance MELI official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/MELI/history/)",
     "weight": 0.136937
   },
   {
@@ -66,7 +66,7 @@
     "avg_cost": 149.54,
     "last_price": 102.25,
     "market_value": 13803.75,
-    "price_source": "Yahoo Finance NOW official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/NOW/history/)",
+    "price_source": "Yahoo Finance NOW official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/NOW/history/)",
     "weight": 0.06352
   },
   {
@@ -76,7 +76,7 @@
     "avg_cost": 409.613223,
     "last_price": 398.7300109863281,
     "market_value": 48246.33,
-    "price_source": "Yahoo Finance TSM official close (daily Close, session 2026-11-13) @ 2026-11-13 close 16:00 ET (https://finance.yahoo.com/quote/TSM/history/)",
+    "price_source": "Yahoo Finance TSM official close (daily Close, session 2026-11-13) @ 2026-11-13 close (https://finance.yahoo.com/quote/TSM/history/)",
     "weight": 0.222011
   }
 ]
