@@ -1,6 +1,6 @@
 {
   "as_of": "2026-11-16T21:00:00Z",
-  "source": "Yahoo Finance official close",
+  "source": "Yahoo Finance previous official close",
   "prices": {
     "ALL": {
       "price": 270.42999267578125,
@@ -23,7 +23,7 @@
       "as_of": "2026-11-16T21:00:00Z"
     },
     "ASML": {
-      "price": 1406.7850341796875,
+      "price": 1406.7900390625,
       "as_of": "2026-11-16T21:00:00Z"
     },
     "AVGO": {
