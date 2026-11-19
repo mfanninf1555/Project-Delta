@@ -1,0 +1,66 @@
+[2026-11-19T21:42:34Z] host check OK: grok-bot-vm-429005534, machine-id be992e2c..., repo /home/box/project-delta/repo
+[2026-11-19T21:42:34Z] safeguards OK: location/identity, 162 ledger lines + protected files valid, protected paths match last Overseer commit aa89447
+[2026-11-19T21:42:36Z] pre-run integrity OK: ledger lines=162, team files match replay
+[2026-11-19T21:43:04Z] corporate actions booked: 2
+[2026-11-19T21:43:04Z] APPROVED  team1 team1-20261119-DASH: ok
+[2026-11-19T21:43:04Z] APPROVED  team4 team4-20261119-GLDM: ok
+[2026-11-19T21:43:12Z] reconcile: sum(team values)=928,650.61 + unallocated=0.00 vs master=928,650.62 diff=-0.0
+[2026-11-19T21:43:13Z] approved=2 rejected=0 deferred=0 new_lines=4
+
+SUMMARY {
+  "run_id": "2026-11-19_1630",
+  "slot": "1630",
+  "dry_run": false,
+  "now_et": "2026-11-19T16:42:34.077596-05:00",
+  "hostname": "grok-bot-vm-429005534",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 928650.61,
+    "unallocated_cash": 0.0,
+    "master_total": 928650.62,
+    "diff": -0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-11-19",
+  "approved": 2,
+  "rejected": 0,
+  "deferred": 0,
+  "corporate_actions": 2,
+  "new_ledger_lines": 4,
+  "total_value": 928650.61,
+  "team_values": {
+    "team1": 198550.94,
+    "team2": 259948.84,
+    "team3": 231990.83,
+    "team4": 238160.0
+  },
+  "team_cash": {
+    "team1": 1270.22,
+    "team2": 14920.98,
+    "team3": 10323.29,
+    "team4": 117226.4
+  },
+  "sp500tr": 16117.4599609375,
+  "decisions": [
+    {
+      "team": "team1",
+      "proposal_id": "team1-20261119-DASH",
+      "status": "approved",
+      "reasons": [],
+      "shares": 170.0,
+      "decision_price": 157.1300048828125,
+      "amount": 26712.1
+    },
+    {
+      "team": "team4",
+      "proposal_id": "team4-20261119-GLDM",
+      "status": "approved",
+      "reasons": [],
+      "shares": 245.0,
+      "decision_price": 72.33999633789062,
+      "amount": 17723.3
+    }
+  ],
+  "prices_json_tickers": 94
+}
