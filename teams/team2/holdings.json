@@ -6,8 +6,8 @@
     "avg_cost": 1630.84,
     "last_price": 1356.199951171875,
     "market_value": 13562.0,
-    "price_source": "Yahoo Finance ASML official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/ASML/history/)",
-    "weight": 0.052172
+    "price_source": "Yahoo Finance ASML official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/ASML/history/)",
+    "weight": 0.052165
   },
   {
     "ticker": "BRK-B",
@@ -16,8 +16,8 @@
     "avg_cost": 539.82,
     "last_price": 572.0399780273438,
     "market_value": 26313.84,
-    "price_source": "Yahoo Finance BRK-B official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/BRK-B/history/)",
-    "weight": 0.101227
+    "price_source": "Yahoo Finance BRK-B official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/BRK-B/history/)",
+    "weight": 0.101214
   },
   {
     "ticker": "CB",
@@ -26,8 +26,8 @@
     "avg_cost": 356.435,
     "last_price": 370.1099853515625,
     "market_value": 20726.16,
-    "price_source": "Yahoo Finance CB official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/CB/history/)",
-    "weight": 0.079732
+    "price_source": "Yahoo Finance CB official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/CB/history/)",
+    "weight": 0.079721
   },
   {
     "ticker": "COST",
@@ -36,8 +36,8 @@
     "avg_cost": 994.61,
     "last_price": 1093.8299560546875,
     "market_value": 22970.43,
-    "price_source": "Yahoo Finance COST official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/COST/history/)",
-    "weight": 0.088365
+    "price_source": "Yahoo Finance COST official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/COST/history/)",
+    "weight": 0.088354
   },
   {
     "ticker": "IDXX",
@@ -46,8 +46,8 @@
     "avg_cost": 557.93,
     "last_price": 689.6500244140625,
     "market_value": 30344.6,
-    "price_source": "Yahoo Finance IDXX official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/IDXX/history/)",
-    "weight": 0.116733
+    "price_source": "Yahoo Finance IDXX official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/IDXX/history/)",
+    "weight": 0.116718
   },
   {
     "ticker": "MCD",
@@ -56,8 +56,8 @@
     "avg_cost": 246.52,
     "last_price": 272.3500061035156,
     "market_value": 23149.75,
-    "price_source": "Yahoo Finance MCD official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/MCD/history/)",
-    "weight": 0.089055
+    "price_source": "Yahoo Finance MCD official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/MCD/history/)",
+    "weight": 0.089043
   },
   {
     "ticker": "MRSH",
@@ -66,8 +66,8 @@
     "avg_cost": 191.26,
     "last_price": 204.66000366210938,
     "market_value": 13302.9,
-    "price_source": "Yahoo Finance MRSH official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/MRSH/history/)",
-    "weight": 0.051175
+    "price_source": "Yahoo Finance MRSH official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/MRSH/history/)",
+    "weight": 0.051168
   },
   {
     "ticker": "MSFT",
@@ -76,8 +76,8 @@
     "avg_cost": 531.87,
     "last_price": 498.29998779296875,
     "market_value": 17440.5,
-    "price_source": "Yahoo Finance MSFT official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/MSFT/history/)",
-    "weight": 0.067092
+    "price_source": "Yahoo Finance MSFT official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/MSFT/history/)",
+    "weight": 0.067083
   },
   {
     "ticker": "PG",
@@ -86,8 +86,8 @@
     "avg_cost": 159.32,
     "last_price": 167.85000610351562,
     "market_value": 21820.5,
-    "price_source": "Yahoo Finance PG official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/PG/history/)",
-    "weight": 0.083942
+    "price_source": "Yahoo Finance PG official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/PG/history/)",
+    "weight": 0.08393
   },
   {
     "ticker": "RMD",
@@ -96,8 +96,8 @@
     "avg_cost": 245.5,
     "last_price": 236.8800048828125,
     "market_value": 19187.28,
-    "price_source": "Yahoo Finance RMD official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/RMD/history/)",
-    "weight": 0.073812
+    "price_source": "Yahoo Finance RMD official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/RMD/history/)",
+    "weight": 0.073802
   },
   {
     "ticker": "SPGI",
@@ -106,8 +106,8 @@
     "avg_cost": 438.12,
     "last_price": 442.6600036621094,
     "market_value": 17706.4,
-    "price_source": "Yahoo Finance SPGI official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/SPGI/history/)",
-    "weight": 0.068115
+    "price_source": "Yahoo Finance SPGI official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/SPGI/history/)",
+    "weight": 0.068106
   },
   {
     "ticker": "V",
@@ -116,7 +116,7 @@
     "avg_cost": 406.57,
     "last_price": 402.25,
     "market_value": 18503.5,
-    "price_source": "Yahoo Finance V official close (daily Close, session 2026-11-19) @ 2026-11-19 close 16:00 ET (https://finance.yahoo.com/quote/V/history/)",
-    "weight": 0.071181
+    "price_source": "Yahoo Finance V official close (daily Close, session 2026-11-19) @ 2026-11-19 close (https://finance.yahoo.com/quote/V/history/)",
+    "weight": 0.071172
   }
 ]

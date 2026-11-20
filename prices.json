@@ -1,6 +1,6 @@
 {
   "as_of": "2026-11-19T21:00:00Z",
-  "source": "Yahoo Finance official close",
+  "source": "Yahoo Finance previous official close",
   "prices": {
     "ALL": {
       "price": 266.7699890136719,
@@ -167,7 +167,7 @@
       "as_of": "2026-11-19T21:00:00Z"
     },
     "ILMN": {
-      "price": 200.65499877929688,
+      "price": 200.66000366210938,
       "as_of": "2026-11-19T21:00:00Z"
     },
     "ISRG": {
@@ -291,7 +291,7 @@
       "as_of": "2026-11-19T21:00:00Z"
     },
     "SNDK": {
-      "price": 755.1599731445312,
+      "price": 94.3949966430664,
       "as_of": "2026-11-19T21:00:00Z"
     },
     "SPG": {
