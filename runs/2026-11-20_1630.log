@@ -1,0 +1,45 @@
+[2026-11-20T21:38:16Z] host check OK: grok-bot-vm-429005534, machine-id be992e2c..., repo /home/box/project-delta/repo
+[2026-11-20T21:38:17Z] safeguards OK: location/identity, 169 ledger lines + protected files valid, protected paths match last Overseer commit 4899918
+[2026-11-20T21:38:18Z] pre-run integrity OK: ledger lines=169, team files match replay
+[2026-11-20T21:38:47Z] corporate actions booked: 0
+[2026-11-20T21:38:56Z] reconcile: sum(team values)=905,038.79 + unallocated=0.00 vs master=905,038.79 diff=-0.0
+[2026-11-20T21:38:56Z] approved=0 rejected=0 deferred=0 new_lines=0
+
+SUMMARY {
+  "run_id": "2026-11-20_1630",
+  "slot": "1630",
+  "dry_run": false,
+  "now_et": "2026-11-20T16:38:16.879867-05:00",
+  "hostname": "grok-bot-vm-429005534",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 905038.79,
+    "unallocated_cash": 0.0,
+    "master_total": 905038.79,
+    "diff": -0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-11-20",
+  "approved": 0,
+  "rejected": 0,
+  "deferred": 0,
+  "corporate_actions": 0,
+  "new_ledger_lines": 0,
+  "total_value": 905038.79,
+  "team_values": {
+    "team1": 187895.45,
+    "team2": 258308.0,
+    "team3": 226520.25,
+    "team4": 232315.09
+  },
+  "team_cash": {
+    "team1": 1270.22,
+    "team2": 14955.28,
+    "team3": 10323.29,
+    "team4": 98168.9
+  },
+  "sp500tr": 15522.2099609375,
+  "decisions": [],
+  "prices_json_tickers": 95
+}
