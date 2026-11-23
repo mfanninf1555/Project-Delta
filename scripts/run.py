@@ -99,6 +99,17 @@ def session_info(day: dt.date):
             "early_close": (close_et.hour, close_et.minute) != (16, 0)}
 
 
+
+# Matt-approved official-close overrides, used only by _p0900 when Yahoo's previous-session
+# daily Close is missing. Key is (ticker, previous session date). Applied only on an exact
+# key match; every other pricing path is unchanged.
+APPROVED_CLOSE_OVERRIDES = {
+    ("SNDK", dt.date(2026, 11, 20)): (
+        79.23999786376953,
+        "Matt-approved 2026-11-23: Yahoo daily Close null on split-effective day; Friday 16:30 official close mark from prices.json",
+    ),
+}
+
 # ---------------------------------------------------------------- prices
 def yf_retry(fn, *a, tries=5, **k):
     """Call a yfinance function with exponential backoff (Yahoo rate-limits bursts)."""
@@ -240,6 +251,16 @@ class Pricer:
         prev = self.sess["prev_session"]
         d = self._daily(t, self.sess["date"])
         if prev not in d:
+            override = APPROVED_CLOSE_OVERRIDES.get((t, prev))
+            if override is not None:
+                px, reason = override
+                self.bar_time[t] = self.sess["prev_close"]
+                log(f"{t}: using Matt-approved close override for {prev}: {px} ({reason})")
+                return px, self._src(
+                    t,
+                    f"Matt-approved official-close override (session {prev}; {reason})",
+                    f"{prev} close",
+                )
             raise RuntimeError(f"{t}: no official close for previous session {prev}")
         self.bar_time[t] = self.sess["prev_close"]
         return d[prev], self._src(t, f"official close (daily Close, session {prev})", f"{prev} close")
