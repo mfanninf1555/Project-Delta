@@ -1,0 +1,47 @@
+[2026-11-23T16:44:46Z] host check OK: grok-bot-vm-429005534, machine-id be992e2c..., repo /home/box/project-delta/repo
+[2026-11-23T16:44:47Z] safeguards OK: location/identity, 169 ledger lines + protected files valid, protected paths match last Overseer commit b6b3361
+[2026-11-23T16:44:48Z] pre-run integrity OK: ledger lines=169, team files match replay
+[2026-11-23T16:45:16Z] corporate actions booked: 2
+[2026-11-23T16:45:16Z] DEFERRED  team1 team1-20261123-GOOGL (execute_slot/date not this run)
+[2026-11-23T16:45:23Z] SNDK: using Matt-approved close override for 2026-11-20: 79.23999786376953 (Matt-approved 2026-11-23: Yahoo daily Close null on split-effective day; Friday 16:30 official close mark from prices.json)
+[2026-11-23T16:45:26Z] reconcile: sum(team values)=905,173.94 + unallocated=0.00 vs master=905,173.94 diff=-0.0
+[2026-11-23T16:45:26Z] approved=0 rejected=0 deferred=1 new_lines=2
+
+SUMMARY {
+  "run_id": "2026-11-23_0900",
+  "slot": "0900",
+  "dry_run": false,
+  "now_et": "2026-11-23T11:44:46.926271-05:00",
+  "hostname": "grok-bot-vm-429005534",
+  "early_close": false,
+  "reconciliation": {
+    "team_sum": 905173.94,
+    "unallocated_cash": 0.0,
+    "master_total": 905173.94,
+    "diff": -0.0,
+    "ok": true
+  },
+  "status": "ok",
+  "session_date": "2026-11-23",
+  "approved": 0,
+  "rejected": 0,
+  "deferred": 1,
+  "corporate_actions": 2,
+  "new_ledger_lines": 2,
+  "total_value": 905173.94,
+  "team_values": {
+    "team1": 187895.45,
+    "team2": 258308.0,
+    "team3": 226542.25,
+    "team4": 232428.24
+  },
+  "team_cash": {
+    "team1": 1270.22,
+    "team2": 14955.28,
+    "team3": 10345.29,
+    "team4": 98282.05
+  },
+  "sp500tr": 15522.2099609375,
+  "decisions": [],
+  "prices_json_tickers": 95
+}
