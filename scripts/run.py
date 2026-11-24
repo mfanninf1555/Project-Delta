@@ -102,7 +102,8 @@ def session_info(day: dt.date):
 
 # Matt-approved official-close overrides, used only by _p0900 when Yahoo's previous-session
 # daily Close is missing. Key is (ticker, previous session date). Applied only on an exact
-# key match; every other pricing path is unchanged.
+# key match, before the general fallback to the prior 16:30 booked official close.
+# Every other pricing path is unchanged.
 APPROVED_CLOSE_OVERRIDES = {
     ("SNDK", dt.date(2026, 11, 20)): (
         79.23999786376953,
@@ -177,11 +178,70 @@ def yahoo_chart(t, start, end, interval, events=False, host="query1"):
     return df, meta, div.sort_index(), spl.sort_index()
 
 
+
+def _committed_text(repo, path):
+    """Return the HEAD contents of path, or None if the path is not in HEAD (uncommitted/missing)."""
+    r = subprocess.run(["git", "-C", repo, "show", f"HEAD:{path}"], capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    return r.stdout
+
+
+def _committed_json(repo, path):
+    raw = _committed_text(repo, path)
+    if raw is None:
+        return None
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+
+
+def _commit_hash_for(repo, path):
+    r = subprocess.run(["git", "-C", repo, "log", "-1", "--format=%H", "HEAD", "--", path],
+                       capture_output=True, text=True)
+    if r.returncode != 0 or not r.stdout.strip():
+        return None
+    return r.stdout.strip()
+
+
+def _usable_px(x):
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) and x > 0
+
+
+def _is_1630_official_close_source(src, session_date):
+    """True only if src is a 16:30 official-close mark for exactly this session date."""
+    if not isinstance(src, str) or not src:
+        return False
+    rejected = (
+        "previous official close",
+        "latest regular-session quote",
+        "INDICATIVE",
+        "Matt-approved official-close override",
+        "fallback to Overseer-booked",
+        "1m bar",
+        "2m bar",
+        "5m bar",
+        "chart regularMarketPrice",
+    )
+    if any(s in src for s in rejected):
+        return False
+    if "official close" not in src:
+        return False
+    return session_date.isoformat() in src
+
+
+def _fallback_price_source(t, prev, rel, commit):
+    return (f"{t} fallback to Overseer-booked 16:30 official close for {prev} "
+            f"(Yahoo daily Close missing); source {rel} commit {commit} @ {prev} close")
+
+
 class Pricer:
-    def __init__(self, slot, now, sess, wait_close_min, indicative=False):
+    def __init__(self, slot, now, sess, wait_close_min, indicative=False, repo=None):
         self.slot, self.now, self.sess = slot, now, sess
         self.indicative = indicative
         self.wait_close_min = wait_close_min
+        self.repo = repo
         self.cache = {}
         self.bar_time = {}  # ticker -> actual price bar time (aware datetime)
         self.cache_qt = {}
@@ -251,23 +311,107 @@ class Pricer:
         url = f"https://finance.yahoo.com/quote/{t.replace('^', '%5E')}/history/"
         return f"Yahoo Finance {t} {desc} @ {ts} ({url})"
 
+    def _mark_from_1630_snapshot(self, snap, t, prev, rel):
+        """Return (px, src) from a committed prev-session 16:30 snapshot, or None."""
+        if not isinstance(snap, dict):
+            return None
+        if snap.get("run_slot") != "1630" or snap.get("session_date") != prev.isoformat():
+            return None
+        if t == BENCH:
+            px, src = snap.get("sp500_total_return"), snap.get("sp500_total_return_source")
+        elif t == SPX:
+            px, src = snap.get("sp500_price"), snap.get("sp500_price_source")
+        else:
+            found = [p for p in (snap.get("positions") or [])
+                     if isinstance(p, dict) and p.get("ticker") == t]
+            if not found:
+                return None
+            if len({p.get("last_price") for p in found}) != 1:
+                return None
+            if not all(_is_1630_official_close_source(p.get("price_source"), prev) for p in found):
+                return None
+            px, src = found[0].get("last_price"), found[0].get("price_source")
+        if not _usable_px(px) or not _is_1630_official_close_source(src, prev):
+            return None
+        commit = _commit_hash_for(self.repo, rel)
+        if not commit:
+            return None
+        return px, _fallback_price_source(t, prev, rel, commit)
+
+    def _mark_from_1630_prices_json(self, t, prev):
+        """Return (px, src) from committed prices.json only if it is the prev-session 16:30 file."""
+        rel = "prices.json"
+        doc = _committed_json(self.repo, rel)
+        if not isinstance(doc, dict):
+            return None
+        if doc.get("source") != "Yahoo Finance official close":
+            return None
+        close_z = zulu(self.sess["prev_close"]) if self.sess.get("prev_close") else None
+        if not close_z or doc.get("as_of") != close_z:
+            return None
+        if t == BENCH:
+            rec = doc.get("sp500_total_return") if isinstance(doc.get("sp500_total_return"), dict) else {}
+            px, as_of = rec.get("level"), rec.get("as_of")
+        elif t == SPX:
+            return None  # prices.json does not carry ^GSPC
+        else:
+            rec = (doc.get("prices") or {}).get(t)
+            if not isinstance(rec, dict):
+                return None
+            px, as_of = rec.get("price"), rec.get("as_of")
+        if as_of != close_z or not _usable_px(px):
+            return None
+        commit = _commit_hash_for(self.repo, rel)
+        if not commit:
+            return None
+        return px, _fallback_price_source(t, prev, rel, commit)
+
+    def _booked_1630_close(self, t, prev):
+        """Committed official close booked by the prev-session 16:30 run, or None.
+
+        Prefers snapshots/<prev>_1630.json; then prices.json only if that file is
+        provably the previous session's 16:30 official-close marks (source + as_of).
+        Reads HEAD only: uncommitted working-tree files are ignored.
+        """
+        if not self.repo or prev is None:
+            return None
+        rel = f"snapshots/{prev.isoformat()}_1630.json"
+        snap = _committed_json(self.repo, rel)
+        if snap is not None:
+            mark = self._mark_from_1630_snapshot(snap, t, prev, rel)
+            if mark is not None:
+                return mark, rel
+        mark = self._mark_from_1630_prices_json(t, prev)
+        if mark is not None:
+            return mark, "prices.json"
+        return None
+
     def _p0900(self, t):  # previous official close
+        # Order (Matt-approved 2026-11-24): Yahoo daily Close, then explicit
+        # APPROVED_CLOSE_OVERRIDES, then the prior 16:30 booked official close, else raise.
         prev = self.sess["prev_session"]
         d = self._daily(t, self.sess["date"])
-        if prev not in d:
-            override = APPROVED_CLOSE_OVERRIDES.get((t, prev))
-            if override is not None:
-                px, reason = override
-                self.bar_time[t] = self.sess["prev_close"]
-                log(f"{t}: using Matt-approved close override for {prev}: {px} ({reason})")
-                return px, self._src(
-                    t,
-                    f"Matt-approved official-close override (session {prev}; {reason})",
-                    f"{prev} close",
-                )
-            raise RuntimeError(f"{t}: no official close for previous session {prev}")
-        self.bar_time[t] = self.sess["prev_close"]
-        return d[prev], self._src(t, f"official close (daily Close, session {prev})", f"{prev} close")
+        if prev in d:
+            self.bar_time[t] = self.sess["prev_close"]
+            return d[prev], self._src(t, f"official close (daily Close, session {prev})", f"{prev} close")
+        override = APPROVED_CLOSE_OVERRIDES.get((t, prev))
+        if override is not None:
+            px, reason = override
+            self.bar_time[t] = self.sess["prev_close"]
+            log(f"{t}: using Matt-approved close override for {prev}: {px} ({reason})")
+            return px, self._src(
+                t,
+                f"Matt-approved official-close override (session {prev}; {reason})",
+                f"{prev} close",
+            )
+        booked = self._booked_1630_close(t, prev)
+        if booked is not None:
+            (px, src), rel = booked
+            self.bar_time[t] = self.sess["prev_close"]
+            log(f"{t}: fallback to Overseer-booked 16:30 official close for {prev} "
+                f"(Yahoo daily Close missing): {px} from {rel}")
+            return px, src
+        raise RuntimeError(f"{t}: no official close for previous session {prev}")
 
     def _p1630(self, t):  # official close of today (early close aware)
         day = self.sess["date"]
@@ -983,7 +1127,7 @@ def run(args, repo, inbox, slot, now, sess, run_id, summary):
     if indicative:
         log("dry-run before the official close: pricing with latest regular-session quotes as INDICATIVE only")
         summary["indicative_prices"] = True
-    pricer = Pricer(slot, now, sess, args.wait_close_minutes, indicative)
+    pricer = Pricer(slot, now, sess, args.wait_close_minutes, indicative, repo=repo)
     ledger_path = os.path.join(repo, "ledger.jsonl")
     ledger = read_ledger(ledger_path)
     inc = rj(os.path.join(repo, "performance.json"))
