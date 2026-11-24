@@ -41,5 +41,7 @@ SUMMARY {
   },
   "sp500tr": 16176.48046875,
   "decisions": [],
-  "prices_json_tickers": 95
+  "prices_json_tickers": 95,
+  "log": "/home/box/project-delta/repo/runs/2026-11-24_1630.log",
+  "commit": "123b5da8e78825c965b6258c2f4604509b7a23a7"
 }
