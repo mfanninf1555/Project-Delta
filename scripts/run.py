@@ -108,6 +108,10 @@ APPROVED_CLOSE_OVERRIDES = {
         79.23999786376953,
         "Matt-approved 2026-11-23: Yahoo daily Close null on split-effective day; Friday 16:30 official close mark from prices.json",
     ),
+    ("SNDK", dt.date(2026, 11, 23)): (
+        87.70999908447266,
+        "Matt-approved 2026-11-24: Yahoo daily Close null for 2026-11-23; 11/23 16:30 official close mark from prices.json",
+    ),
 }
 
 # ---------------------------------------------------------------- prices
